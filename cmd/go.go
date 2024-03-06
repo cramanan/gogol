@@ -29,13 +29,13 @@ func GetGolangVersion() (s string, err error) {
 	if err != nil {
 		return "", err
 	}
-	return string(out), nil
+	s = string(out)
+	return
 }
 
 func RunGo(cmd *cobra.Command, args []string) {
 	fmt.Print("Starting Golang Project...\n")
 	_, err := GetGolangVersion()
-	reader := bufio.NewReader(os.Stdin)
 	if err != nil {
 		fmt.Println("Golang is not installed or could not be found.\nTry running:\n  go version\nTo see if golang is installed")
 		done := false
@@ -51,11 +51,12 @@ func RunGo(cmd *cobra.Command, args []string) {
 			case "n", "no":
 				os.Exit(0)
 			default:
-				fmt.Println("Invalid choice. Please enter 'y'/yes or 'n'")
+				fmt.Println("Invalid choice. Please enter 'y' or 'n'")
 			}
 		}
 	}
 	fmt.Print("Project name: ")
+	reader := bufio.NewReader(os.Stdin)
 	name, err := reader.ReadString('\n')
 	if err != nil {
 		InternalError(err)
@@ -65,12 +66,7 @@ func RunGo(cmd *cobra.Command, args []string) {
 		name = "Untitled"
 	}
 	fmt.Printf("Creating %s/ directory\n", name)
-	err = os.Mkdir(name, 0777)
-	if err != nil {
-		InternalError(err)
-	}
-
-	err = os.Chdir(name)
+	err = Mkdir(name)
 	if err != nil {
 		InternalError(err)
 	}

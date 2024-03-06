@@ -11,6 +11,19 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func Mkdir(name string) (err error) {
+	err = os.Mkdir(name, os.ModePerm)
+	if err != nil {
+		return err
+	}
+
+	err = os.Chdir(name)
+	if err != nil {
+		return err
+	}
+	return
+}
+
 func YesNo(question string) (string, error) {
 	fmt.Print(question + " [y/n]: ")
 	reader := bufio.NewReader(os.Stdin)
