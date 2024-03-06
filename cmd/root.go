@@ -4,8 +4,6 @@ Copyright © 2024 MATHIAS MARCHETTI aquemaati@gmail.com
 package cmd
 
 import (
-	newcmd "gogol/cmd/new"
-	parsecmd "gogol/cmd/parse"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -13,12 +11,12 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "pre-master-v2",
-	Short: "Create projects faster tham ever",
-	Long:  `GOGOL Copyright © 2024 NAME HERE <EMAIL ADDRESS>	`,
+	Use:   "GOGOL ",
+	Short: "Create projects faster than ever.",
+	Long:  `GOGOL Copyright © 2024 MATHIAS MARCHETTI aquemaati@gmail.com`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+	//Run: func(cmd *cobra.Command, args []string) {},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -31,8 +29,6 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.AddCommand(newcmd.NewCmd)
-	rootCmd.AddCommand(parsecmd.ParseCmd)
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
@@ -41,5 +37,4 @@ func init() {
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
