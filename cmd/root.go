@@ -4,10 +4,27 @@ Copyright © 2024 MATHIAS MARCHETTI aquemaati@gmail.com
 package cmd
 
 import (
+	"bufio"
+	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
 )
+
+func YesNo(question string) (string, error) {
+	fmt.Print(question + " [y/n]: ")
+	reader := bufio.NewReader(os.Stdin)
+	choice, err := reader.ReadString('\n')
+	if err != nil {
+		return "", err
+	}
+	return choice[:len(choice)-1], nil
+}
+
+func InternalError(err error) {
+	fmt.Println(err)
+	os.Exit(1)
+}
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{

@@ -32,25 +32,8 @@ func GetGolangVersion() (s string, err error) {
 	return string(out), nil
 }
 
-func YesNo(question string) (string, error) {
-	fmt.Print(question + " [y/n]: ")
-	reader := bufio.NewReader(os.Stdin)
-	choice, err := reader.ReadString('\n')
-	if err != nil {
-		return "", err
-	}
-	return choice[:len(choice)-1], nil
-}
-
-func InternalError(err error) {
-	fmt.Println(err)
-	os.Exit(1)
-}
-
-func Run(cmd *cobra.Command, args []string) {
+func RunGo(cmd *cobra.Command, args []string) {
 	fmt.Print("Starting Golang Project...\n")
-
-	//TODO MUST CHECK IF GO IS INSTALLED
 	_, err := GetGolangVersion()
 	reader := bufio.NewReader(os.Stdin)
 	if err != nil {
@@ -123,7 +106,7 @@ var goCmd = &cobra.Command{
 	main.go
 	main_test.go (optional)
 	`,
-	Run: Run,
+	Run: RunGo,
 }
 
 func init() {
