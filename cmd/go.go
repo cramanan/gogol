@@ -7,6 +7,8 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/exec"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -18,30 +20,83 @@ import "fmt"
 func main() {
 	fmt.Println("Hello World")
 }
+
 `
 
+func GetGolangVersion() (s string, err error) {
+	cmd := exec.Command("go", "version")
+	out, err := cmd.Output()
+	if err != nil {
+		return "", err
+	}
+	return string(out), nil
+}
+
+func YesNo(question string) (string, error) {
+	fmt.Print(question + " [y/n]: ")
+	reader := bufio.NewReader(os.Stdin)
+	choice, err := reader.ReadString('\n')
+	if err != nil {
+		return "", err
+	}
+	return choice[:len(choice)-1], nil
+}
+
 func Run(cmd *cobra.Command, args []string) {
-	fmt.Print("Starting Golang Project...\nProject name: ")
+	fmt.Print("Starting Golang Project...\n")
 
 	//TODO MUST CHECK IF GO IS INSTALLED
+	_, err := GetGolangVersion()
 	reader := bufio.NewReader(os.Stdin)
-	name, _ := reader.ReadString('\n')
+	if err != nil {
+		fmt.Println("Golang is not installed or could not be found.\nTry running:\n  go version\nTo see if golang is installed")
+		done := false
+		for !done {
+			choice, vErr := YesNo("Do you want to continue")
+			if vErr != nil {
+				fmt.Println(vErr)
+				os.Exit(1)
+			}
+			switch strings.ToLower(choice) {
+			case "y", "yes":
+				done = true
+			case "n", "no":
+				os.Exit(0)
+			default:
+				fmt.Println("Invalid choice. Please enter 'y'/yes or 'n'")
+			}
+		}
+	}
+	fmt.Print("Project name: ")
+	name, err := reader.ReadString('\n')
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 	name = name[:len(name)-1]
 	if name == "" {
 		name = "Untitled"
 	}
 	fmt.Printf("Creating %s/ directory\n", name)
-	err := os.Mkdir(name, 0777)
+	err = os.Mkdir(name, 0777)
 	if err != nil {
 		fmt.Println(err)
-		return
+		os.Exit(1)
 	}
+
+	fmt.Print("Package name: ")
+	pkgname, err := reader.ReadString('\n')
+	if err != nil {
+		os.Exit(1)
+	}
+	fmt.Println(pkgname)
+	return
 
 	main, err := os.Create(name + "/main.go")
 	_, err = main.WriteString(GODEFAULT)
 	if err != nil {
 		fmt.Println(err)
-		return
+		os.Exit(1)
 	}
 }
 
