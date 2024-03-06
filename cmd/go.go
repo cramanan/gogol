@@ -42,6 +42,11 @@ func YesNo(question string) (string, error) {
 	return choice[:len(choice)-1], nil
 }
 
+func InternalError(err error) {
+	fmt.Println(err)
+	os.Exit(1)
+}
+
 func Run(cmd *cobra.Command, args []string) {
 	fmt.Print("Starting Golang Project...\n")
 
@@ -70,8 +75,7 @@ func Run(cmd *cobra.Command, args []string) {
 	fmt.Print("Project name: ")
 	name, err := reader.ReadString('\n')
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		InternalError(err)
 	}
 	name = name[:len(name)-1]
 	if name == "" {
@@ -80,24 +84,33 @@ func Run(cmd *cobra.Command, args []string) {
 	fmt.Printf("Creating %s/ directory\n", name)
 	err = os.Mkdir(name, 0777)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		InternalError(err)
+	}
+
+	err = os.Chdir(name)
+	if err != nil {
+		InternalError(err)
 	}
 
 	fmt.Print("Package name: ")
 	pkgname, err := reader.ReadString('\n')
 	if err != nil {
-		os.Exit(1)
+		InternalError(err)
 	}
-	fmt.Println(pkgname)
-	return
-
-	main, err := os.Create(name + "/main.go")
+	pkgname = pkgname[:len(pkgname)-1]
+	mod := exec.Command("go", "mod", "init", pkgname)
+	if err := mod.Run(); err != nil {
+		InternalError(err)
+	}
+	main, err := os.Create("main.go")
+	if err != nil {
+		InternalError(err)
+	}
 	_, err = main.WriteString(GODEFAULT)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		InternalError(err)
 	}
+	fmt.Printf("All set and done !\nyou can now run:\n  cd %s\n  go run .\n", name)
 }
 
 // goCmd represents the go command
