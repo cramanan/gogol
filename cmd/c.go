@@ -85,7 +85,7 @@ func RunC(cmd *cobra.Command, args []string) {
 	if err != nil {
 		InternalError(err)
 	}
-	fmt.Printf("All set and done !\nyou can now run:\n  cd %s\n  gcc -o <output_name> src/main.c\n ./<output_name>", name)
+	fmt.Printf("All set and done !\nyou can now run:\n  cd %s\n  gcc -o <output_name> src/main.c\n ./<output_name>\n", name)
 }
 
 // cCmd represents the c command

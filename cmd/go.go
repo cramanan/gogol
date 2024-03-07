@@ -35,8 +35,8 @@ func GetGolangVersion() (s string, err error) {
 
 func RunGo(cmd *cobra.Command, args []string) {
 	fmt.Print("Starting Golang Project...\n")
-	_, err := GetGolangVersion()
-	if err != nil {
+	_, versionErr := GetGolangVersion()
+	if versionErr != nil {
 		fmt.Println("Golang is not installed or could not be found.\nTry running:\n  go version\nTo see if golang is installed")
 		done := false
 		for !done {
@@ -73,14 +73,21 @@ func RunGo(cmd *cobra.Command, args []string) {
 
 	fmt.Print("Package name: ")
 	pkgname, err := reader.ReadString('\n')
+	pkgname = pkgname[:len(pkgname)-1]
 	if err != nil {
 		InternalError(err)
 	}
-	pkgname = pkgname[:len(pkgname)-1]
-	mod := exec.Command("go", "mod", "init", pkgname)
-	if err := mod.Run(); err != nil {
-		InternalError(err)
+	if pkgname == "" {
+		pkgname = "untitled"
 	}
+
+	if versionErr == nil {
+		mod := exec.Command("go", "mod", "init", pkgname)
+		if err := mod.Run(); err != nil {
+			InternalError(err)
+		}
+	}
+
 	main, err := os.Create("main.go")
 	if err != nil {
 		InternalError(err)
