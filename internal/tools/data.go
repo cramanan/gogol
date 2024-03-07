@@ -14,9 +14,9 @@ type File struct {
 }
 
 type Directory struct {
-	Name        string      `yaml:"name"`
-	Directories []Directory `yaml:"directories"`
-	Files       []File      `yaml:"files"`
+	Name        string       `yaml:"name"`
+	Directories []*Directory `yaml:"directories"`
+	Files       []*File      `yaml:"files"`
 }
 
 func RetrieveYAMLdir(url string) (dir Directory, err error) {
@@ -43,17 +43,37 @@ func CreateDirAndFiles(dir Directory) (err error) {
 	}
 
 	for _, file := range dir.Files {
-		os.Create(file.Name)
+		f, err := os.Create(file.Name)
+		if err != nil {
+			return err
+		}
+
+		_, err = f.Write(file.Content)
+		if err != nil {
+			return err
+		}
 	}
 
 	for _, subdir := range dir.Directories {
-		err = CreateDirAndFiles(subdir)
+		err = CreateDirAndFiles(*subdir)
 		if err != nil {
 			return
 		}
 	}
 	if err = os.Chdir(".."); err != nil {
 		return
+	}
+	return
+}
+
+func FindFile(name string, dir Directory) (f *File) {
+	for _, file := range dir.Files {
+		if file.Name == name {
+			return file
+		}
+	}
+	for _, subdir := range dir.Directories {
+		return FindFile(name, *subdir)
 	}
 	return
 }

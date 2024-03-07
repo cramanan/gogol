@@ -6,6 +6,7 @@ package cmd
 import (
 	"bufio"
 	"fmt"
+	"gogol/internal/tools"
 	"os"
 	"os/exec"
 	"strings"
@@ -66,33 +67,18 @@ func RunGo(cmd *cobra.Command, args []string) {
 		name = "Untitled"
 	}
 	fmt.Printf("Creating %s/ directory\n", name)
-	err = Mkdir(name)
+
+	dir, err := tools.RetrieveYAMLdir("https://raw.githubusercontent.com/cramanan/gogol/cramanan/api/golang.yaml")
 	if err != nil {
 		InternalError(err)
 	}
+	dir.Name = name
 
-	fmt.Print("Package name: ")
-	pkgname, err := reader.ReadString('\n')
-	pkgname = pkgname[:len(pkgname)-1]
-	if err != nil {
-		InternalError(err)
+	f := tools.FindFile("main.go", dir)
+	if f != nil {
+		f.Content = []byte(GODEFAULT)
 	}
-	if pkgname == "" {
-		pkgname = "untitled"
-	}
-
-	if versionErr == nil {
-		mod := exec.Command("go", "mod", "init", pkgname)
-		if err := mod.Run(); err != nil {
-			InternalError(err)
-		}
-	}
-
-	main, err := os.Create("main.go")
-	if err != nil {
-		InternalError(err)
-	}
-	_, err = main.WriteString(GODEFAULT)
+	err = tools.CreateDirAndFiles(dir)
 	if err != nil {
 		InternalError(err)
 	}
