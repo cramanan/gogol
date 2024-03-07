@@ -6,6 +6,7 @@ package cmd
 import (
 	"bufio"
 	"fmt"
+	"gogol/internal/tools"
 	"os"
 	"os/exec"
 	"strings"
@@ -34,6 +35,7 @@ func GetGolangVersion() (s string, err error) {
 }
 
 func RunGo(cmd *cobra.Command, args []string) {
+	fmt.Println(tools.OS())
 	fmt.Print("Starting Golang Project...\n")
 	_, versionErr := GetGolangVersion()
 	if versionErr != nil {
@@ -103,11 +105,12 @@ func RunGo(cmd *cobra.Command, args []string) {
 var goCmd = &cobra.Command{
 	Use:   "go",
 	Short: "Create a Golang project.",
-	Long: `gogol go create a Golang project that includes the following files: 
-	go.mod
-	go.sum (optional)
-	main.go
-	main_test.go (optional)
+	Long: `gogol go create a Golang project that includes the following file structure: 
+  directory
+    ├── go.mod
+	├── go.sum (optional)
+    ├── main_test.go (optional)
+    └── main.go
 	`,
 	Run: RunGo,
 }
