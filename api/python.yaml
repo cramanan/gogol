@@ -1,0 +1,12 @@
+---
+python:
+    - directories:
+          - main:
+                - __init__.py
+                - helpers.py
+          - tests:
+                - main_tests.py
+                - helpers_tests.py
+    - files:
+          - setup.py
+          - requirements.txt

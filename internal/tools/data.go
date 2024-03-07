@@ -3,6 +3,8 @@ package tools
 import (
 	"fmt"
 	"os"
+
+	"gopkg.in/yaml.v2"
 )
 
 // This function use recursivity to create subfiles and subdirectories
@@ -13,8 +15,23 @@ type File struct {
 
 type Directory struct {
 	Name           string
-	SubDirectories []Directory
-	Files          []File
+	SubDirectories []Directory `json:"directories"`
+	Files          []File      `json:"files"`
+}
+
+func RetrieveYAMLdir(name string) (dir *Directory, err error) {
+	file, err := os.Open(name)
+	if err != nil {
+		return
+	}
+	var buf []byte
+	if _, err = file.Read(buf); err != nil {
+		return
+	}
+	if err = yaml.Unmarshal(buf, dir); err != nil {
+		return
+	}
+	return
 }
 
 func CreateFileStructure(dir Directory) (err error) {
@@ -42,5 +59,5 @@ func CreateFileStructure(dir Directory) (err error) {
 	for _, subdir := range dir.SubDirectories {
 		CreateFileStructure(subdir)
 	}
-	return nil
+	return
 }

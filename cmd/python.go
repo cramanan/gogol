@@ -6,6 +6,7 @@ package cmd
 import (
 	"bufio"
 	"fmt"
+	"gogol/internal/tools"
 	"os"
 	"os/exec"
 	"strings"
@@ -56,7 +57,11 @@ func RunPython(cmd *cobra.Command, args []string) {
 		name = "Untitled"
 	}
 	fmt.Printf("Creating %s/ directory\n", name)
-
+	dir, err := tools.RetrieveYAMLdir("../api/python.yaml")
+	if err != nil {
+		InternalError(err)
+	}
+	fmt.Println(dir)
 	fmt.Printf("All set and done !\nyou can now run:\n  cd %s\n  python3 .\n", name)
 }
 
