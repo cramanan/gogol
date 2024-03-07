@@ -8,3 +8,6 @@ directories:
       files:
           - name: main_tests.py
           - name: helpers_tests.py
+files:
+    - name: setup.py
+    - name: requirements.py
