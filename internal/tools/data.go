@@ -2,33 +2,35 @@ package tools
 
 import (
 	"fmt"
+	"io"
+	"net/http"
 	"os"
 
 	"gopkg.in/yaml.v2"
 )
 
-// This function use recursivity to create subfiles and subdirectories
+// This function use recursivity to create subfiles and Directories
 type File struct {
-	Name    string
-	Content []byte
+	Name    string `yaml:"name"`
+	Content []byte `yaml:"content"`
 }
 
 type Directory struct {
-	Name           string
-	SubDirectories []Directory `json:"directories"`
-	Files          []File      `json:"files"`
+	Name        string
+	Directories []Directory `yaml:"directories"`
+	Files       []File      `yaml:"files"`
 }
 
 func RetrieveYAMLdir(name string) (dir *Directory, err error) {
-	file, err := os.Open(name)
+	resp, err := http.Get("https://raw.githubusercontent.com/cramanan/gogol/cramanan/api/python.yaml")
 	if err != nil {
 		return
 	}
-	var buf []byte
-	if _, err = file.Read(buf); err != nil {
+	buf, err := io.ReadAll(resp.Body)
+	if err != nil {
 		return
 	}
-	if err = yaml.Unmarshal(buf, dir); err != nil {
+	if err = yaml.Unmarshal(buf, &dir); err != nil {
 		return
 	}
 	return
@@ -56,7 +58,7 @@ func CreateFileStructure(dir Directory) (err error) {
 		}
 		defer fil.Close()
 	}
-	for _, subdir := range dir.SubDirectories {
+	for _, subdir := range dir.Directories {
 		CreateFileStructure(subdir)
 	}
 	return

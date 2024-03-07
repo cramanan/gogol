@@ -11,5 +11,5 @@ directories:
           - name: "helpers_tests.py"
 
 files:
-    - requirements.py
-    - setup.py
+    - name: requirements.py
+    - name: setup.py
