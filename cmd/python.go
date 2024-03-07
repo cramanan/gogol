@@ -57,11 +57,15 @@ func RunPython(cmd *cobra.Command, args []string) {
 		name = "Untitled"
 	}
 	fmt.Printf("Creating %s/ directory\n", name)
-	dir, err := tools.RetrieveYAMLdir("../api/python.yaml")
+	dir, err := tools.RetrieveYAMLdir("https://raw.githubusercontent.com/cramanan/gogol/cramanan/api/python.yaml")
 	if err != nil {
 		InternalError(err)
 	}
-	fmt.Println(dir)
+	dir.Name = name
+	err = tools.CreateDirAndFiles(dir)
+	if err != nil {
+		InternalError(err)
+	}
 	fmt.Printf("All set and done !\nyou can now run:\n  cd %s\n  python3 .\n", name)
 }
 

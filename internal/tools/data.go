@@ -1,7 +1,6 @@
 package tools
 
 import (
-	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -9,20 +8,19 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// This function use recursivity to create subfiles and Directories
 type File struct {
 	Name    string `yaml:"name"`
 	Content []byte `yaml:"content"`
 }
 
 type Directory struct {
-	Name        string
+	Name        string      `yaml:"name"`
 	Directories []Directory `yaml:"directories"`
 	Files       []File      `yaml:"files"`
 }
 
-func RetrieveYAMLdir(name string) (dir *Directory, err error) {
-	resp, err := http.Get("https://raw.githubusercontent.com/cramanan/gogol/cramanan/api/python.yaml")
+func RetrieveYAMLdir(url string) (dir Directory, err error) {
+	resp, err := http.Get(url)
 	if err != nil {
 		return
 	}
@@ -36,30 +34,26 @@ func RetrieveYAMLdir(name string) (dir *Directory, err error) {
 	return
 }
 
-func CreateFileStructure(dir Directory) (err error) {
-	fmt.Println("++> Creating directory")
-	if err = os.Mkdir(dir.Name, 0777); err != nil {
-		return err
+func CreateDirAndFiles(dir Directory) (err error) {
+	if err = os.Mkdir(dir.Name, os.ModePerm); err != nil {
+		return
 	}
 	if err = os.Chdir(dir.Name); err != nil {
-		return err
+		return
 	}
-	for _, file := range dir.Files {
-		fmt.Printf("+++> Creating file : %s\n", file.Name)
-		// Create file
-		fil, err := os.Create(file.Name)
-		if err != nil {
-			return fmt.Errorf("%s can't be created", file.Name)
-		}
-		fmt.Printf("%s has been created\n", file.Name)
 
-		if _, err = fil.Write(file.Content); err != nil {
-			return err
-		}
-		defer fil.Close()
+	for _, file := range dir.Files {
+		os.Create(file.Name)
 	}
+
 	for _, subdir := range dir.Directories {
-		CreateFileStructure(subdir)
+		err = CreateDirAndFiles(subdir)
+		if err != nil {
+			return
+		}
+	}
+	if err = os.Chdir(".."); err != nil {
+		return
 	}
 	return
 }

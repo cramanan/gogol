@@ -4,6 +4,6 @@ trash
 .DS_Store
 gogol
 parse.txt
-dockerscript.sh
+script.sh
 .vscode/
 Untitled/

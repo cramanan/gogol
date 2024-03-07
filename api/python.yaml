@@ -1,15 +1,10 @@
----
-name: "python-project"
+name: python
 directories:
-    - name: "main"
+    - name: main
       files:
-          - name: "__init__.py"
+          - name: __init__.py
           - name: helpers.py
-    - name: "tests"
+    - name: tests
       files:
-          - name: "main_tests.py"
-          - name: "helpers_tests.py"
-
-files:
-    - name: requirements.py
-    - name: setup.py
+          - name: main_tests.py
+          - name: helpers_tests.py
