@@ -1,50 +1,46 @@
 package tools
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http"
+	"os"
 )
 
-// Allow to acces the data.json api
-
-type DATAS []Data
-
-type Data struct {
-	Name string `json:"name"`
-	Lang []Lang `json:"languages"`
-}
-type Lang struct {
-	Name      string `json:"name"`
-	Link      string `json:"link"`
-	LinkSetup string `json:"linksetup"`
+// This function use recursivity to create subfiles and subdirectories
+type File struct {
+	Name    string
+	Content []byte
 }
 
-// function to get the language endpoints for
-// the kind of app asked
-func GetDatas(kind, lang string) (Lang, error) {
-	datas := new(DATAS)
-	datal := new(Lang)
-	resp, err := http.Get("https://raw.githubusercontent.com/aquemaati/gogol/main/api/data.json")
-	if err != nil {
-		return *datal, err
-	}
-	defer resp.Body.Close()
+type Directory struct {
+	Name           string
+	SubDirectories []Directory
+	Files          []File
+}
 
-	if err := json.NewDecoder(resp.Body).Decode(datas); err != nil {
-		return *datal, err
+func CreateFileStructure(dir Directory) (err error) {
+	fmt.Println("++> Creating directory")
+	if err = os.Mkdir(dir.Name, 0777); err != nil {
+		return err
 	}
-	// Find the requested kind of data
-	for _, d := range *datas {
-		if d.Name == kind {
-			// Find the requested language
-			for _, l := range d.Lang {
-				if l.Name == lang {
-					return l, nil
-				}
-			}
+	if err = os.Chdir(dir.Name); err != nil {
+		return err
+	}
+	for _, file := range dir.Files {
+		fmt.Printf("+++> Creating file : %s\n", file.Name)
+		// Create file
+		fil, err := os.Create(file.Name)
+		if err != nil {
+			return fmt.Errorf("%s can't be created", file.Name)
 		}
-	}
+		fmt.Printf("%s has been created\n", file.Name)
 
-	return *datal, fmt.Errorf("language %s for app %s not found", lang, kind)
+		if _, err = fil.Write(file.Content); err != nil {
+			return err
+		}
+		defer fil.Close()
+	}
+	for _, subdir := range dir.SubDirectories {
+		CreateFileStructure(subdir)
+	}
+	return nil
 }
