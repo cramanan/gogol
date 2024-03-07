@@ -6,7 +6,6 @@ package cmd
 import (
 	"bufio"
 	"fmt"
-	"gogol/internal/tools"
 	"os"
 	"os/exec"
 	"strings"
@@ -35,7 +34,6 @@ func GetGolangVersion() (s string, err error) {
 }
 
 func RunGo(cmd *cobra.Command, args []string) {
-	fmt.Println(tools.OS())
 	fmt.Print("Starting Golang Project...\n")
 	_, versionErr := GetGolangVersion()
 	if versionErr != nil {
