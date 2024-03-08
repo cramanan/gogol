@@ -74,10 +74,6 @@ func RunGo(cmd *cobra.Command, args []string) {
 	}
 	dir.Name = name
 
-	f := tools.FindFile("main.go", dir)
-	if f != nil {
-		f.Content = []byte(GODEFAULT)
-	}
 	err = tools.CreateDirAndFiles(dir)
 	if err != nil {
 		InternalError(err)

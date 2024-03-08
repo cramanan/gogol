@@ -1,15 +1,17 @@
 package tools
 
 import (
-	"io"
 	"net/http"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"gopkg.in/yaml.v2"
 )
 
 type File struct {
 	Name    string `yaml:"name"`
+	Path    string
 	Content []byte `yaml:"content"`
 }
 
@@ -24,11 +26,7 @@ func RetrieveYAMLdir(url string) (dir Directory, err error) {
 	if err != nil {
 		return
 	}
-	buf, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return
-	}
-	if err = yaml.Unmarshal(buf, &dir); err != nil {
+	if err = yaml.NewDecoder(resp.Body).Decode(&dir); err != nil {
 		return
 	}
 	return
@@ -66,14 +64,20 @@ func CreateDirAndFiles(dir Directory) (err error) {
 	return
 }
 
-func FindFile(name string, dir Directory) (f *File) {
-	for _, file := range dir.Files {
-		if file.Name == name {
-			return file
+func (root Directory) String() string {
+	path := root.Name
+	var sb strings.Builder
+	var f func(Directory)
+	f = func(dir Directory) {
+		for _, file := range dir.Files {
+			sb.WriteString(filepath.Join(path, file.Name) + "\n")
+		}
+		for _, subdir := range dir.Directories {
+			path = filepath.Join(path, subdir.Name)
+			f(*subdir)
 		}
 	}
-	for _, subdir := range dir.Directories {
-		return FindFile(name, *subdir)
-	}
-	return
+	f(root)
+	return sb.String()
+
 }

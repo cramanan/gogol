@@ -10,4 +10,4 @@ directories:
           - name: helpers_tests.py
 files:
     - name: setup.py
-    - name: requirements.py
+    - name: requirements.txt
