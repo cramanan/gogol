@@ -79,3 +79,21 @@ func (root Directory) String() string {
 	f(root.Name, root)
 	return sb.String()
 }
+
+func (root *Directory) Search(filename string) (fptr *File) {
+	var f func(string, *Directory)
+	f = func(path string, dir *Directory) {
+		for _, file := range dir.Files {
+			if filepath.Join(path, file.Name) == filename {
+				fptr = file
+				return
+			}
+		}
+		for _, subdir := range dir.Directories {
+			newPath := filepath.Join(path, subdir.Name)
+			f(newPath, subdir)
+		}
+	}
+	f(root.Name, root)
+	return fptr
+}
