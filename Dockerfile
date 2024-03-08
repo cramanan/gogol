@@ -1,4 +1,4 @@
-FROM golang:latest
+FROM ubuntu:latest
 
 COPY gogol ./bin
 

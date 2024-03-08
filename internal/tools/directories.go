@@ -21,7 +21,7 @@ type Directory struct {
 	Files       []*File      `yaml:"files"`
 }
 
-func RetrieveYAMLdir(url string) (dir Directory, err error) {
+func RetrieveYAMLdir(url string) (dir *Directory, err error) {
 	resp, err := http.Get(url)
 	if err != nil {
 		return

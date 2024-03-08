@@ -9,7 +9,6 @@ import (
 	"gogol/internal/tools"
 	"os"
 	"os/exec"
-	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -26,7 +25,7 @@ func GetPythonVersion() (s string, err error) {
 
 func RunPython(cmd *cobra.Command, args []string) {
 	fmt.Println("Startin Python project...")
-	_, err := GetPythonVersion()
+	/*_, err := GetPythonVersion()
 	if err != nil {
 		fmt.Println("Python is not installed or could not be found.\nTry running:\n  python3 --version\nTo see if python is installed")
 		done := false
@@ -45,7 +44,7 @@ func RunPython(cmd *cobra.Command, args []string) {
 				fmt.Println("Invalid choice. Please enter 'y' or 'n'")
 			}
 		}
-	}
+	}*/
 	fmt.Print("Project name: ")
 	reader := bufio.NewReader(os.Stdin)
 	name, err := reader.ReadString('\n')
@@ -62,7 +61,7 @@ func RunPython(cmd *cobra.Command, args []string) {
 		InternalError(err)
 	}
 	dir.Name = name
-	err = tools.CreateDirAndFiles(dir)
+	err = tools.CreateDirAndFiles(*dir)
 	if err != nil {
 		InternalError(err)
 	}

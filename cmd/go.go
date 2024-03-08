@@ -79,7 +79,7 @@ func RunGo(cmd *cobra.Command, args []string) {
 	dir.PopFile(fmt.Sprintf("%s/go.sum", name))
 	dir.PopFile(fmt.Sprintf("%s/main_test.go", name))
 
-	err = tools.CreateDirAndFiles(dir)
+	err = tools.CreateDirAndFiles(*dir)
 	if err != nil {
 		InternalError(err)
 	}
