@@ -65,19 +65,17 @@ func CreateDirAndFiles(dir Directory) (err error) {
 }
 
 func (root Directory) String() string {
-	path := root.Name
 	var sb strings.Builder
-	var f func(Directory)
-	f = func(dir Directory) {
+	var f func(string, Directory)
+	f = func(path string, dir Directory) {
 		for _, file := range dir.Files {
 			sb.WriteString(filepath.Join(path, file.Name) + "\n")
 		}
 		for _, subdir := range dir.Directories {
-			path = filepath.Join(path, subdir.Name)
-			f(*subdir)
+			newPath := filepath.Join(path, subdir.Name)
+			f(newPath, *subdir)
 		}
 	}
-	f(root)
+	f(root.Name, root)
 	return sb.String()
-
 }
