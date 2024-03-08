@@ -97,3 +97,22 @@ func (root *Directory) Search(filename string) (fptr *File) {
 	f(root.Name, root)
 	return fptr
 }
+
+func (root *Directory) PopFile(filename string) (fptr *File) {
+	var f func(string, *Directory)
+	f = func(path string, dir *Directory) {
+		for index, file := range dir.Files {
+			if filepath.Join(path, file.Name) == filename {
+				fptr = file
+				dir.Files = append(dir.Files[:index], dir.Files[index+1:]...)
+				return
+			}
+		}
+		for _, subdir := range dir.Directories {
+			newPath := filepath.Join(path, subdir.Name)
+			f(newPath, subdir)
+		}
+	}
+	f(root.Name, root)
+	return fptr
+}

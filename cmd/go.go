@@ -9,7 +9,6 @@ import (
 	"gogol/internal/tools"
 	"os"
 	"os/exec"
-	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -21,7 +20,6 @@ import "fmt"
 func main() {
 	fmt.Println("Hello World")
 }
-
 `
 
 func GetGolangVersion() (s string, err error) {
@@ -36,7 +34,7 @@ func GetGolangVersion() (s string, err error) {
 
 func RunGo(cmd *cobra.Command, args []string) {
 	fmt.Print("Starting Golang Project...\n")
-	_, versionErr := GetGolangVersion()
+	/*_, versionErr := GetGolangVersion()
 	if versionErr != nil {
 		fmt.Println("Golang is not installed or could not be found.\nTry running:\n  go version\nTo see if golang is installed")
 		done := false
@@ -55,7 +53,7 @@ func RunGo(cmd *cobra.Command, args []string) {
 				fmt.Println("Invalid choice. Please enter 'y' or 'n'")
 			}
 		}
-	}
+	}*/
 	fmt.Print("Project name: ")
 	reader := bufio.NewReader(os.Stdin)
 	name, err := reader.ReadString('\n')
@@ -73,6 +71,13 @@ func RunGo(cmd *cobra.Command, args []string) {
 		InternalError(err)
 	}
 	dir.Name = name
+	f := dir.Search(fmt.Sprintf("%s/main.go", name))
+	if f != nil {
+		f.Content = []byte(GODEFAULT)
+	}
+
+	dir.PopFile(fmt.Sprintf("%s/go.sum", name))
+	dir.PopFile(fmt.Sprintf("%s/main_test.go", name))
 
 	err = tools.CreateDirAndFiles(dir)
 	if err != nil {
