@@ -61,6 +61,9 @@ func RunPython(cmd *cobra.Command, args []string) {
 		InternalError(err)
 	}
 	dir.Name = name
+	if README {
+		dir.AddFile(tools.File{Name: "README.md"})
+	}
 	err = tools.CreateDirAndFiles(*dir)
 	if err != nil {
 		InternalError(err)
