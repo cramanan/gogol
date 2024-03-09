@@ -43,8 +43,7 @@ func RetrieveYAMLdir(url string) (dir *Directory, err error) {
 func (root Directory) Create(origin string) (err error) {
 	var f func(string, Directory)
 	f = func(path string, dir Directory) {
-		err = os.MkdirAll(path, os.ModePerm)
-		if err != nil {
+		if err = os.MkdirAll(filepath.Join(origin, path), os.ModePerm); err != nil {
 			return
 		}
 		for _, file := range dir.Files {
