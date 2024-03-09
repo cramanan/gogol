@@ -24,7 +24,7 @@ func GetPythonVersion() (s string, err error) {
 }
 
 func RunPython(cmd *cobra.Command, args []string) {
-	fmt.Println("Startin Python project...")
+	fmt.Println("Starting Python project...")
 	/*_, err := GetPythonVersion()
 	if err != nil {
 		fmt.Println("Python is not installed or could not be found.\nTry running:\n  python3 --version\nTo see if python is installed")
@@ -53,7 +53,7 @@ func RunPython(cmd *cobra.Command, args []string) {
 	}
 	name = name[:len(name)-1]
 	if name == "" {
-		name = "Untitled"
+		name = "untitled"
 	}
 	fmt.Printf("Creating %s/ directory\n", name)
 	dir, err := tools.RetrieveYAMLdir("https://raw.githubusercontent.com/cramanan/gogol/cramanan/api/python.yaml")
@@ -64,10 +64,17 @@ func RunPython(cmd *cobra.Command, args []string) {
 	if README {
 		dir.AddFile(tools.File{Name: "README.md"})
 	}
+
+	f := dir.Search(fmt.Sprintf("%s/__main__.py", name))
+	if f != nil {
+		f.WriteString(tools.PYTHONDEFAULT)
+	}
+
 	err = tools.CreateDirAndFiles(*dir)
 	if err != nil {
 		InternalError(err)
 	}
+
 	fmt.Printf("All set and done !\nyou can now run:\n  cd %s\n  python3 .\n", name)
 }
 

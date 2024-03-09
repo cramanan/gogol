@@ -53,7 +53,7 @@ func RunGo(cmd *cobra.Command, args []string) {
 	dir.Name = name
 	f := dir.Search(fmt.Sprintf("%s/main.go", name))
 	if f != nil {
-		f.Content = []byte(tools.GODEFAULT)
+		f.WriteString(tools.GODEFAULT)
 	}
 
 	fmt.Print("Package name: ")

@@ -15,6 +15,14 @@ type File struct {
 	Content []byte `yaml:"content"`
 }
 
+func (f *File) Write(b []byte) {
+	f.Content = append(f.Content, b...)
+}
+
+func (f *File) WriteString(s string) {
+	f.Content = append(f.Content, []byte(s)...)
+}
+
 type Directory struct {
 	Name        string       `yaml:"name"`
 	Directories []*Directory `yaml:"directories"`

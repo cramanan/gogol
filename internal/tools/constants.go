@@ -10,5 +10,7 @@ func main() {
 }
 `
 
-	PYTHONDEFAULT = ``
+	PYTHONDEFAULT = `if __name__ == "__main__":
+	print("Hello World")
+	`
 )
