@@ -71,7 +71,7 @@ func RunPython(cmd *cobra.Command, args []string) {
 		f.WriteString(tools.PYTHONDEFAULT)
 	}
 
-	err = tools.CreateDirAndFiles(*dir)
+	err = dir.Create(".")
 	if err != nil {
 		InternalError(err)
 	}

@@ -40,36 +40,30 @@ func RetrieveYAMLdir(url string) (dir *Directory, err error) {
 	return
 }
 
-func CreateDirAndFiles(dir Directory) (err error) {
-	if err = os.Mkdir(dir.Name, os.ModePerm); err != nil {
-		return
-	}
-	if err = os.Chdir(dir.Name); err != nil {
-		return
-	}
-
-	for _, file := range dir.Files {
-		f, err := os.Create(file.Name)
-		if err != nil {
-			return err
-		}
-
-		_, err = f.Write(file.Content)
-		if err != nil {
-			return err
-		}
-	}
-
-	for _, subdir := range dir.Directories {
-		err = CreateDirAndFiles(*subdir)
+func (root Directory) Create(origin string) (err error) {
+	var f func(string, Directory)
+	f = func(path string, dir Directory) {
+		err = os.MkdirAll(path, os.ModePerm)
 		if err != nil {
 			return
 		}
+		for _, file := range dir.Files {
+			_, err = os.Create(filepath.Join(origin, path, file.Name))
+			if err != nil {
+				return
+			}
+		}
+		for _, subdir := range dir.Directories {
+			newPath := filepath.Join(path, subdir.Name)
+			if err != nil {
+				return
+			}
+			f(newPath, *subdir)
+		}
+
 	}
-	if err = os.Chdir(".."); err != nil {
-		return
-	}
-	return
+	f(root.Name, root)
+	return err
 }
 
 func (root Directory) String() string {

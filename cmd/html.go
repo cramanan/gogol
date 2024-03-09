@@ -15,7 +15,7 @@ import (
 // htmlCmd represents the html command
 var htmlCmd = &cobra.Command{
 	Use:   "html",
-	Short: "Create a simple HTML + CSS + JS Project",
+	Short: "Create a simple HTML/CSS/JS project",
 	Long: `Create a directory containing the following file structure:
   directory/
     ├── index.html
@@ -54,7 +54,7 @@ func RunHTML(cmd *cobra.Command, args []string) {
 		f.WriteString(tools.CSSDEFAULT)
 	}
 
-	if err = tools.CreateDirAndFiles(*root); err != nil {
+	if err = root.Create("."); err != nil {
 		InternalError(err)
 	}
 }

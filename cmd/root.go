@@ -41,9 +41,9 @@ func InternalError(err error) {
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "GOGOL",
+	Use:   "gogol",
 	Short: "Create projects faster than ever.",
-	Long:  `GOGOL Copyright © 2024 MATHIAS MARCHETTI aquemaati@gmail.com`,
+	Long:  `gogol Copyright © 2024 MATHIAS MARCHETTI aquemaati@gmail.com`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	//Run: func(cmd *cobra.Command, args []string) {},

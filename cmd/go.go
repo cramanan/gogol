@@ -83,12 +83,12 @@ func RunGo(cmd *cobra.Command, args []string) {
 	dir.PopFile(fmt.Sprintf("%s/go.sum", name))
 	dir.PopFile(fmt.Sprintf("%s/main_test.go", name))
 	fmt.Printf("Creating %s/ directory\n", name)
-	err = tools.CreateDirAndFiles(*dir)
+	err = dir.Create(".")
 	if err != nil {
 		InternalError(err)
 	}
 
-	fmt.Println("All set and done !\nyou can now run:\n  go run .")
+	fmt.Printf("All set and done !\nyou can now run:\ncd %s\n  go run .", dir.Name)
 }
 
 // goCmd represents the go command
