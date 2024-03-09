@@ -70,4 +70,5 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.PersistentFlags().BoolVarP(&README, "readme", "r", false, "Add a README.md to your project")
+	rootCmd.PersistentFlags().BoolVarP(&LICENSE, "license", "l", false, "Add a LICENSE.md to your project")
 }
