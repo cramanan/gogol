@@ -8,33 +8,12 @@ import (
 	"fmt"
 	"gogol/internal/tools"
 	"os"
-	"os/exec"
 
 	"github.com/spf13/cobra"
 )
 
-const GODEFAULT = `package main
-
-import "fmt"
-
-func main() {
-	fmt.Println("Hello World")
-}
-`
-
-func GetGolangVersion() (s string, err error) {
-	cmd := exec.Command("go", "version")
-	out, err := cmd.Output()
-	if err != nil {
-		return "", err
-	}
-	s = string(out)
-	return
-}
-
 func RunGo(cmd *cobra.Command, args []string) {
 	fmt.Print("Starting Golang Project...\n")
-	fmt.Println(README)
 	/*_, versionErr := GetGolangVersion()
 	if versionErr != nil {
 		fmt.Println("Golang is not installed or could not be found.\nTry running:\n  go version\nTo see if golang is installed")
@@ -74,7 +53,7 @@ func RunGo(cmd *cobra.Command, args []string) {
 	dir.Name = name
 	f := dir.Search(fmt.Sprintf("%s/main.go", name))
 	if f != nil {
-		f.Content = []byte(GODEFAULT)
+		f.Content = []byte(tools.GODEFAULT)
 	}
 
 	fmt.Print("Package name: ")
@@ -94,6 +73,10 @@ func RunGo(cmd *cobra.Command, args []string) {
 
 	if README {
 		dir.AddFile(tools.File{Name: "README.md"})
+	}
+
+	if LICENSE {
+		dir.AddFile(tools.File{Name: "LICENSE.md"})
 	}
 
 	dir.PopFile(fmt.Sprintf("%s/go.sum", name))
