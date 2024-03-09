@@ -12,7 +12,7 @@ func main() {
 
 	PYTHONDEFAULT = `if __name__ == "__main__":
 	print("Hello World")
-	`
+`
 
 	HTMLDEFAULT = `<!DOCTYPE html>
 <html lang="en">

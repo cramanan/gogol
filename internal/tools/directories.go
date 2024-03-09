@@ -11,16 +11,17 @@ import (
 
 type File struct {
 	Name    string `yaml:"name"`
-	Path    string
 	Content []byte `yaml:"content"`
 }
 
+// File.Write() write bytes onto the File.Content
 func (f *File) Write(b []byte) {
 	f.Content = append(f.Content, b...)
 }
 
+// File.WriteString() converts the string input into bytes then write with File.Write()
 func (f *File) WriteString(s string) {
-	f.Content = append(f.Content, []byte(s)...)
+	f.Write([]byte(s))
 }
 
 type Directory struct {
@@ -40,6 +41,7 @@ func RetrieveYAMLdir(url string) (dir *Directory, err error) {
 	return
 }
 
+// Directory.Create() opens every directory and files. It will also write the Files.Content into the files.
 func (root Directory) Create(origin string) (err error) {
 	var f func(string, Directory)
 	f = func(path string, dir Directory) {

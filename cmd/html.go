@@ -1,5 +1,5 @@
 /*
-Copyright © 2024 NAME HERE <EMAIL ADDRESS>
+Copyright © 2024 cramanan cramananjaonapro@gmail.com
 */
 package cmd
 
@@ -54,9 +54,18 @@ func RunHTML(cmd *cobra.Command, args []string) {
 		f.WriteString(tools.CSSDEFAULT)
 	}
 
+	if README {
+		root.AddFile(tools.File{Name: "README.md"})
+	}
+
+	if LICENSE {
+		root.AddFile(tools.File{Name: "LICENSE.md"})
+	}
+
 	if err = root.Create("."); err != nil {
 		InternalError(err)
 	}
+	fmt.Println("All set and done, your files are ready !")
 }
 
 func init() {

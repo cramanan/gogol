@@ -66,6 +66,10 @@ func RunPython(cmd *cobra.Command, args []string) {
 		dir.AddFile(tools.File{Name: "README.md"})
 	}
 
+	if LICENSE {
+		dir.AddFile(tools.File{Name: "LICENSE.md"})
+	}
+
 	f := dir.Search(fmt.Sprintf("%s/__main__.py", name))
 	if f != nil {
 		f.WriteString(tools.PYTHONDEFAULT)
@@ -92,6 +96,8 @@ var pythonCmd = &cobra.Command{
 	├── tests/
 	│	├── main_tests.py
 	│	└── helpers_tests.py
+	│
+	├── __main__.py
 	├── requirements.txt
 	└── setup.py
     `,
