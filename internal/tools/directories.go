@@ -76,8 +76,9 @@ func (root Directory) String() string {
 	var sb strings.Builder
 	var f func(string, Directory)
 	f = func(path string, dir Directory) {
+		sb.WriteString(filepath.Join(path, "\n"))
 		for _, file := range dir.Files {
-			sb.WriteString(filepath.Join(path, file.Name) + "\n")
+			sb.WriteString(filepath.Join("  "+path, file.Name) + "\n")
 		}
 		for _, subdir := range dir.Directories {
 			newPath := filepath.Join(path, subdir.Name)
