@@ -11,3 +11,4 @@ directories:
 files:
     - name: setup.py
     - name: requirements.txt
+    - name: __main__.py
