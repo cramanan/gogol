@@ -34,6 +34,7 @@ func GetGolangVersion() (s string, err error) {
 
 func RunGo(cmd *cobra.Command, args []string) {
 	fmt.Print("Starting Golang Project...\n")
+	fmt.Println(README)
 	/*_, versionErr := GetGolangVersion()
 	if versionErr != nil {
 		fmt.Println("Golang is not installed or could not be found.\nTry running:\n  go version\nTo see if golang is installed")
@@ -62,10 +63,10 @@ func RunGo(cmd *cobra.Command, args []string) {
 	}
 	name = name[:len(name)-1]
 	if name == "" {
-		name = "Untitled"
+		name = "untitled"
 	}
-	fmt.Printf("Creating %s/ directory\n", name)
 
+	fmt.Println("Fetching golang directory")
 	dir, err := tools.RetrieveYAMLdir("https://raw.githubusercontent.com/cramanan/gogol/cramanan/api/golang.yaml")
 	if err != nil {
 		InternalError(err)
@@ -76,14 +77,34 @@ func RunGo(cmd *cobra.Command, args []string) {
 		f.Content = []byte(GODEFAULT)
 	}
 
+	fmt.Print("Package name: ")
+	pkgname, err := reader.ReadString('\n')
+	if err != nil {
+		InternalError(err)
+	}
+	pkgname = pkgname[:len(pkgname)-1]
+	if pkgname == "" {
+		pkgname = "untitled"
+	}
+
+	f = dir.Search(fmt.Sprintf("%s/go.mod", name))
+	if f != nil {
+		f.Content = []byte(fmt.Sprintf("module %s\n", pkgname))
+	}
+
+	if README {
+		dir.AddFile(tools.File{Name: "README.md"})
+	}
+
 	dir.PopFile(fmt.Sprintf("%s/go.sum", name))
 	dir.PopFile(fmt.Sprintf("%s/main_test.go", name))
-
+	fmt.Printf("Creating %s/ directory\n", name)
 	err = tools.CreateDirAndFiles(*dir)
 	if err != nil {
 		InternalError(err)
 	}
-	fmt.Printf("All set and done !\nyou can now run:\n  cd %s\n  go run .\n", name)
+
+	fmt.Println("All set and done !\nyou can now run:\n  go run .")
 }
 
 // goCmd represents the go command

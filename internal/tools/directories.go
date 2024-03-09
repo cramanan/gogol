@@ -80,6 +80,14 @@ func (root Directory) String() string {
 	return sb.String()
 }
 
+func (root *Directory) AddFile(f File) {
+	root.Files = append(root.Files, &f)
+}
+
+func (root *Directory) Mkdir(d Directory) {
+	root.Directories = append(root.Directories, &d)
+}
+
 func (root *Directory) Search(filename string) (fptr *File) {
 	var f func(string, *Directory)
 	f = func(path string, dir *Directory) {

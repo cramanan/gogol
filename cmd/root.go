@@ -58,6 +58,8 @@ func Execute() {
 	}
 }
 
+var README, LICENSE bool
+
 func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
@@ -67,4 +69,5 @@ func init() {
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
+	rootCmd.PersistentFlags().BoolVarP(&README, "readme", "r", false, "Add a README.md to your project")
 }
