@@ -1,4 +1,4 @@
-module gogol
+module github.com/cramanan/gogol
 
 go 1.21.5
 

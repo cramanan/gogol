@@ -6,8 +6,9 @@ package cmd
 import (
 	"bufio"
 	"fmt"
-	"gogol/internal/tools"
 	"os"
+
+	"github.com/cramanan/gogol/internal/tools"
 
 	"github.com/spf13/cobra"
 )
