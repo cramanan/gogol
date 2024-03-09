@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/cramanan/gogol/internal/tools"
 
@@ -53,6 +54,8 @@ func RunPython(cmd *cobra.Command, args []string) {
 		InternalError(err)
 	}
 	name = name[:len(name)-1]
+	name = strings.ReplaceAll(name, "/", "")
+	name = strings.ReplaceAll(name, ".", "")
 	if name == "" {
 		name = "untitled"
 	}
@@ -61,6 +64,7 @@ func RunPython(cmd *cobra.Command, args []string) {
 	if err != nil {
 		InternalError(err)
 	}
+
 	dir.Name = name
 	if README {
 		dir.AddFile(tools.File{Name: "README.md"})

@@ -7,6 +7,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/cramanan/gogol/internal/tools"
 
@@ -42,6 +43,8 @@ func RunGo(cmd *cobra.Command, args []string) {
 		InternalError(err)
 	}
 	name = name[:len(name)-1]
+	name = strings.ReplaceAll(name, "/", "")
+	name = strings.ReplaceAll(name, ".", "")
 	if name == "" {
 		name = "untitled"
 	}
@@ -51,6 +54,7 @@ func RunGo(cmd *cobra.Command, args []string) {
 	if err != nil {
 		InternalError(err)
 	}
+
 	dir.Name = name
 	f := dir.Search(fmt.Sprintf("%s/main.go", name))
 	if f != nil {

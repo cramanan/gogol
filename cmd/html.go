@@ -7,6 +7,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/cramanan/gogol/internal/tools"
 	"github.com/spf13/cobra"
@@ -39,9 +40,12 @@ func RunHTML(cmd *cobra.Command, args []string) {
 		InternalError(err)
 	}
 	name = name[:len(name)-1]
+	name = strings.ReplaceAll(name, "/", "")
+	name = strings.ReplaceAll(name, ".", "")
 	if name == "" {
 		name = "untitled"
 	}
+
 	fmt.Printf("Creating %s/ directory\n", name)
 	root.Name = name
 	f := root.Search(fmt.Sprintf("%s/index.html", root.Name))
