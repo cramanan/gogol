@@ -55,6 +55,10 @@ func RunPython(cmd *cobra.Command, args []string) {
 		dir.AddFile(tools.File{Name: "LICENSE.md"})
 	}
 
+	if DOCKERFILE {
+		dir.AddFile(tools.File{Name: "Dockerfile"})
+	}
+
 	f := dir.Search(fmt.Sprintf("%s/__main__.py", name))
 	if f != nil {
 		f.WriteString(tools.PYTHONDEFAULT)

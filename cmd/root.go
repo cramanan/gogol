@@ -4,7 +4,6 @@ Copyright © 2024 MATHIAS MARCHETTI aquemaati@gmail.com
 package cmd
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 
@@ -24,33 +23,18 @@ func Mkdir(name string) (err error) {
 	return
 }
 
-func YesNo(question string) (string, error) {
-	fmt.Print(question + " [y/n]: ")
-	reader := bufio.NewReader(os.Stdin)
-	choice, err := reader.ReadString('\n')
-	if err != nil {
-		return "", err
-	}
-	return choice[:len(choice)-1], nil
-}
-
 func InternalError(err error) {
 	fmt.Println(err)
 	os.Exit(1)
 }
 
-// rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "gogol",
-	Short: "Create projects faster than ever.",
-	Long:  `gogol Copyright © 2024 MATHIAS MARCHETTI aquemaati@gmail.com`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	//Run: func(cmd *cobra.Command, args []string) {},
+	Use:     "gogol",
+	Short:   "Create projects faster than ever.",
+	Long:    "\r\ngogol is a library that helps you create projects using multiple languages.\r\nTo create a project, run:\r\n  $ gogol [language/command] [flags...]\r\n\r\n",
+	Example: "gogol go\r\ngogol html -rlg",
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
@@ -58,18 +42,11 @@ func Execute() {
 	}
 }
 
-var README, LICENSE, GIT bool
+var README, LICENSE, GIT, DOCKERFILE bool
 
 func init() {
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.pre-master-v2.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.PersistentFlags().BoolVarP(&README, "readme", "r", false, "Add a README.md to your project")
-	rootCmd.PersistentFlags().BoolVarP(&LICENSE, "license", "l", false, "Add a LICENSE.md to your project")
-	rootCmd.PersistentFlags().BoolVarP(&GIT, "github", "g", false, "Change your project into a Git repository")
+	rootCmd.PersistentFlags().BoolVarP(&README, "readme", "r", false, "Add a README.md to your project.")
+	rootCmd.PersistentFlags().BoolVarP(&LICENSE, "license", "l", false, "Add a LICENSE.md to your project.")
+	rootCmd.PersistentFlags().BoolVarP(&GIT, "github", "g", false, "Change your project into a Git repository.")
+	rootCmd.PersistentFlags().BoolVarP(&DOCKERFILE, "dockerfile", "d", false, "Add a Dockerfile to your project.")
 }

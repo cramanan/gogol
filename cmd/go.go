@@ -30,9 +30,6 @@ func RunGo(cmd *cobra.Command, args []string) {
 	}
 	name = strings.ReplaceAll(name, "/", "")
 	name = strings.ReplaceAll(name, ".", "")
-	if name == "" {
-		name = "untitled"
-	}
 
 	fmt.Println("Fetching golang directory\r")
 	dir, err := tools.RetrieveYAMLdir("https://raw.githubusercontent.com/cramanan/gogol/cramanan/api/golang.yaml")
@@ -40,7 +37,9 @@ func RunGo(cmd *cobra.Command, args []string) {
 		InternalError(err)
 	}
 
-	dir.Name = name
+	if name == "" {
+		name = dir.Name
+	}
 	f := dir.Search(fmt.Sprintf("%s/main.go", name))
 	if f != nil {
 		f.WriteString(tools.GODEFAULT)
@@ -49,7 +48,6 @@ func RunGo(cmd *cobra.Command, args []string) {
 	fmt.Print("Package name: ")
 	pkgname, err := t.ReadLine()
 	if err != nil {
-
 		InternalError(err)
 	}
 	if pkgname == "" {
@@ -67,6 +65,10 @@ func RunGo(cmd *cobra.Command, args []string) {
 
 	if LICENSE {
 		dir.AddFile(tools.File{Name: "LICENSE.md"})
+	}
+
+	if DOCKERFILE {
+		dir.AddFile(tools.File{Name: "Dockerfile"})
 	}
 
 	dir.PopFile(fmt.Sprintf("%s/go.sum", name))
