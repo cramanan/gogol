@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/cramanan/gogol/internal/tools"
+	"github.com/go-git/go-git/v5"
 
 	"github.com/spf13/cobra"
 )
@@ -62,6 +63,13 @@ func RunPython(cmd *cobra.Command, args []string) {
 	err = dir.Create(".")
 	if err != nil {
 		InternalError(err)
+	}
+
+	if GIT {
+		_, err := git.PlainInit(name, false)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 
 	fmt.Printf("All set and done !\nyou can now run:\n  cd %s\n  python3 .\n", name)

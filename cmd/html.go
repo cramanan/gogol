@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/cramanan/gogol/internal/tools"
+	"github.com/go-git/go-git/v5"
 	"github.com/spf13/cobra"
 )
 
@@ -68,6 +69,13 @@ func RunHTML(cmd *cobra.Command, args []string) {
 
 	if err = root.Create("."); err != nil {
 		InternalError(err)
+	}
+
+	if GIT {
+		_, err := git.PlainInit(name, false)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 	fmt.Println("All set and done, your files are ready !")
 }
