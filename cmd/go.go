@@ -4,52 +4,37 @@ Copyright © 2024 MATHIAS MARCHETTI aquemaati@gmail.com
 package cmd
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 	"strings"
 
 	"github.com/cramanan/gogol/internal/tools"
+	"github.com/go-git/go-git/v5"
+	"golang.org/x/term"
 
 	"github.com/spf13/cobra"
 )
 
 func RunGo(cmd *cobra.Command, args []string) {
-	fmt.Print("Starting Golang Project...\n")
-	/*_, versionErr := GetGolangVersion()
-	if versionErr != nil {
-		fmt.Println("Golang is not installed or could not be found.\nTry running:\n  go version\nTo see if golang is installed")
-		done := false
-		for !done {
-			choice, vErr := YesNo("Do you want to continue")
-			if vErr != nil {
-				fmt.Println(vErr)
-				os.Exit(1)
-			}
-			switch strings.ToLower(choice) {
-			case "y", "yes":
-				done = true
-			case "n", "no":
-				os.Exit(0)
-			default:
-				fmt.Println("Invalid choice. Please enter 'y' or 'n'")
-			}
-		}
-	}*/
+	fmt.Print("Starting Golang Project...\r\n")
+	oldState, err := term.MakeRaw(int(os.Stdin.Fd()))
+	if err != nil {
+		panic(err)
+	}
+	defer term.Restore(int(os.Stdin.Fd()), oldState)
 	fmt.Print("Project name: ")
-	reader := bufio.NewReader(os.Stdin)
-	name, err := reader.ReadString('\n')
+	t := term.NewTerminal(os.Stdin, "")
+	name, err := t.ReadLine()
 	if err != nil {
 		InternalError(err)
 	}
-	name = name[:len(name)-1]
 	name = strings.ReplaceAll(name, "/", "")
 	name = strings.ReplaceAll(name, ".", "")
 	if name == "" {
 		name = "untitled"
 	}
 
-	fmt.Println("Fetching golang directory")
+	fmt.Println("Fetching golang directory\r")
 	dir, err := tools.RetrieveYAMLdir("https://raw.githubusercontent.com/cramanan/gogol/cramanan/api/golang.yaml")
 	if err != nil {
 		InternalError(err)
@@ -62,11 +47,11 @@ func RunGo(cmd *cobra.Command, args []string) {
 	}
 
 	fmt.Print("Package name: ")
-	pkgname, err := reader.ReadString('\n')
+	pkgname, err := t.ReadLine()
 	if err != nil {
+
 		InternalError(err)
 	}
-	pkgname = pkgname[:len(pkgname)-1]
 	if pkgname == "" {
 		pkgname = "untitled"
 	}
@@ -86,13 +71,20 @@ func RunGo(cmd *cobra.Command, args []string) {
 
 	dir.PopFile(fmt.Sprintf("%s/go.sum", name))
 	dir.PopFile(fmt.Sprintf("%s/main_test.go", name))
-	fmt.Printf("Creating %s/ directory\n", name)
+	fmt.Printf("Creating %s/ directory\r\n", name)
 	err = dir.Create(".")
 	if err != nil {
 		InternalError(err)
 	}
 
-	fmt.Printf("All set and done !\nyou can now run:\ncd %s\n  go run .", dir.Name)
+	if GIT {
+		_, err := git.PlainInit(name, false)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+
+	fmt.Printf("All set and done !\r\nyou can now run:\r\n  cd %s\r\n  go run .\r\n", dir.Name)
 }
 
 // goCmd represents the go command

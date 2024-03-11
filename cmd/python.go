@@ -27,26 +27,6 @@ func GetPythonVersion() (s string, err error) {
 
 func RunPython(cmd *cobra.Command, args []string) {
 	fmt.Println("Starting Python project...")
-	/*_, err := GetPythonVersion()
-	if err != nil {
-		fmt.Println("Python is not installed or could not be found.\nTry running:\n  python3 --version\nTo see if python is installed")
-		done := false
-		for !done {
-			choice, vErr := YesNo("Do you want to continue")
-			if vErr != nil {
-				fmt.Println(vErr)
-				os.Exit(1)
-			}
-			switch strings.ToLower(choice) {
-			case "y", "yes":
-				done = true
-			case "n", "no":
-				os.Exit(0)
-			default:
-				fmt.Println("Invalid choice. Please enter 'y' or 'n'")
-			}
-		}
-	}*/
 	fmt.Print("Project name: ")
 	reader := bufio.NewReader(os.Stdin)
 	name, err := reader.ReadString('\n')

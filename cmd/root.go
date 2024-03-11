@@ -58,7 +58,7 @@ func Execute() {
 	}
 }
 
-var README, LICENSE bool
+var README, LICENSE, GIT bool
 
 func init() {
 	// Here you will define your flags and configuration settings.
@@ -71,4 +71,5 @@ func init() {
 	// when this action is called directly.
 	rootCmd.PersistentFlags().BoolVarP(&README, "readme", "r", false, "Add a README.md to your project")
 	rootCmd.PersistentFlags().BoolVarP(&LICENSE, "license", "l", false, "Add a LICENSE.md to your project")
+	rootCmd.PersistentFlags().BoolVarP(&GIT, "github", "g", false, "Change your project into a Git repository")
 }
