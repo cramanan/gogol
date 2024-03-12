@@ -31,8 +31,8 @@ func InternalError(err error) {
 var rootCmd = &cobra.Command{
 	Use:     "gogol",
 	Short:   "Create projects faster than ever.",
-	Long:    "\r\ngogol is a library that helps you create projects using multiple languages.\r\nTo create a project, run:\r\n  $ gogol [language/command] [flags...]\r\n\r\n",
-	Example: "gogol go\r\ngogol html -rlg",
+	Long:    "\ngogol is a library that helps you create projects using multiple languages.\nTo create a project, run:\n  gogol [language/command] [flags...]\n\n",
+	Example: "  gogol go\n  gogol html -rlg",
 }
 
 func Execute() {
@@ -42,11 +42,12 @@ func Execute() {
 	}
 }
 
-var README, LICENSE, GIT, DOCKERFILE bool
+var README, LICENSE, GIT, DOCKERFILE, MAKEFILE bool
 
 func init() {
 	rootCmd.PersistentFlags().BoolVarP(&README, "readme", "r", false, "Add a README.md to your project.")
 	rootCmd.PersistentFlags().BoolVarP(&LICENSE, "license", "l", false, "Add a LICENSE.md to your project.")
 	rootCmd.PersistentFlags().BoolVarP(&GIT, "github", "g", false, "Change your project into a Git repository.")
 	rootCmd.PersistentFlags().BoolVarP(&DOCKERFILE, "dockerfile", "d", false, "Add a Dockerfile to your project.")
+	rootCmd.PersistentFlags().BoolVarP(&MAKEFILE, "makefile", "m", false, "Add a Makefile to your project. (only for compiled languages)")
 }
