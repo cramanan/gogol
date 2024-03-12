@@ -53,6 +53,7 @@ func (root Directory) Create(origin string) (err error) {
 			if err != nil {
 				return
 			}
+			defer ff.Close()
 			_, err = ff.Write(file.Content)
 			if err != nil {
 				return
