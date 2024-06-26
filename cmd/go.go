@@ -4,59 +4,57 @@ Copyright © 2024 MATHIAS MARCHETTI aquemaati@gmail.com
 package cmd
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"strings"
 
 	"github.com/cramanan/gogol/internal/tools"
 	"github.com/go-git/go-git/v5"
-	"golang.org/x/term"
 
 	"github.com/spf13/cobra"
 )
 
 func RunGo(cmd *cobra.Command, args []string) {
-	fmt.Print("Starting Golang Project...\r\n")
-	oldState, err := term.MakeRaw(int(os.Stdin.Fd()))
-	if err != nil {
-		panic(err)
-	}
-	defer term.Restore(int(os.Stdin.Fd()), oldState)
+	fmt.Print("Starting Golang Project...\n")
 	fmt.Print("Project name: ")
-	t := term.NewTerminal(os.Stdin, "")
-	name, err := t.ReadLine()
+	reader := bufio.NewReader(os.Stdin)
+	name, err := reader.ReadString('\n')
+	name = name[:len(name)-1]
 	if err != nil {
 		InternalError(err)
 	}
 	name = strings.ReplaceAll(name, "/", "")
 	name = strings.ReplaceAll(name, ".", "")
 
-	fmt.Println("Fetching golang directory\r")
+	fmt.Println("Fetching golang directory")
 	dir, err := tools.RetrieveYAMLdir("https://raw.githubusercontent.com/cramanan/gogol/cramanan/api/golang.yaml")
 	if err != nil {
 		InternalError(err)
 	}
 
-	if name == "" {
-		name = dir.Name
+	if name != "" {
+		dir.Name = name
 	}
-	f := dir.Search(fmt.Sprintf("%s/main.go", name))
+
+	f := dir.Search(fmt.Sprintf("%s/main.go", dir.Name))
 	if f != nil {
 		f.WriteString(tools.GODEFAULT)
 	}
 
 	fmt.Print("Package name: ")
-	pkgname, err := t.ReadLine()
+	pkgname, err := reader.ReadString('\n')
+	pkgname = pkgname[:len(pkgname)-1]
 	if err != nil {
 		InternalError(err)
 	}
 	if pkgname == "" {
-		pkgname = "untitled"
+		pkgname = dir.Name
 	}
 
-	f = dir.Search(fmt.Sprintf("%s/go.mod", name))
+	f = dir.Search(fmt.Sprintf("%s/go.mod", dir.Name))
 	if f != nil {
-		f.Content = []byte(fmt.Sprintf("module %s\n", pkgname))
+		f.WriteString(fmt.Sprintf("module %s\n", pkgname))
 	}
 
 	if README {
@@ -71,22 +69,30 @@ func RunGo(cmd *cobra.Command, args []string) {
 		dir.AddFile(tools.File{Name: "Dockerfile"})
 	}
 
-	dir.PopFile(fmt.Sprintf("%s/go.sum", name))
-	dir.PopFile(fmt.Sprintf("%s/main_test.go", name))
-	fmt.Printf("Creating %s/ directory\r\n", name)
+	if MAKEFILE {
+		dir.AddFile(tools.File{Name: "Makefile"})
+	}
+
+	if GIT {
+		dir.AddFile(tools.File{Name: ".gitignore"})
+	}
+
+	dir.PopFile(fmt.Sprintf("%s/go.sum", dir.Name))
+	dir.PopFile(fmt.Sprintf("%s/main_test.go", dir.Name))
+	fmt.Printf("Creating %s/ directory\n", dir.Name)
 	err = dir.Create(".")
 	if err != nil {
 		InternalError(err)
 	}
 
 	if GIT {
-		_, err := git.PlainInit(name, false)
+		_, err = git.PlainInit(dir.Name, false)
 		if err != nil {
-			fmt.Println(err)
+			InternalError(err)
 		}
 	}
 
-	fmt.Printf("All set and done !\r\nyou can now run:\r\n  cd %s\r\n  go run .\r\n", dir.Name)
+	fmt.Printf("All set and done !\nyou can now run:\n  cd %s\n  go run .\n", dir.Name)
 }
 
 // goCmd represents the go command
