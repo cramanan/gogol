@@ -8,11 +8,13 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/go-git/go-git/v5"
 	"github.com/spf13/cobra"
 )
 
 type Directory struct {
 	Name        string
+	repo        *git.Repository
 	Directories map[string]*Directory
 	Files       map[string]*File
 }
@@ -20,6 +22,7 @@ type Directory struct {
 func NewDirectory(name string) *Directory {
 	return &Directory{
 		name,
+		nil,
 		make(map[string]*Directory),
 		make(map[string]*File),
 	}
@@ -56,23 +59,31 @@ type CobraFunc func(cmd *cobra.Command, args []string, root *Directory)
 func GenerateFS(fn CobraFunc) func(cmd *cobra.Command, args []string) {
 	return func(cmd *cobra.Command, args []string) {
 		root := NewDirectory("project")
-		files := map[string]*File{
-			"readme":     NewFile("README.md"),
-			"license":    NewFile("LICENSE.md"),
-			"dockerfile": NewFile("Dockerfile"),
+		files := map[string]string{
+			"readme":     ("README.md"),
+			"license":    ("LICENSE.md"),
+			"dockerfile": ("Dockerfile"),
 		}
 
 		for flag := range files {
 			value, _ := rootCmd.PersistentFlags().GetBool(flag)
 			if value {
-				root.Files[flag] = files[flag]
+				root.Files[flag] = NewFile(files[flag])
 			}
 		}
 
+		var err error
+
 		fn(cmd, args, root)
-		err := root.Create(".")
+		err = root.Create(".")
 		if err != nil {
 			fmt.Println(err)
+			return
+		}
+
+		root.repo, err = git.PlainInit(root.Name, false)
+		if err != nil {
+			return
 		}
 	}
 }
