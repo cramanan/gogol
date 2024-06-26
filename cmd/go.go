@@ -4,26 +4,46 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"bufio"
 	"fmt"
+	"os"
+	"runtime"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
 
-func GO(cmd *cobra.Command, args []string, root *Directory) {
-	fmt.Println(root)
+const GODEFAULT = `package main
+
+import "fmt"
+
+func main(){
+	fmt.Println("Hello World")
+}`
+
+func GO(cmd *cobra.Command, args []string, root *Directory) (err error) {
+	root.NewFile("main.go", []byte(GODEFAULT))
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print("Module name: ")
+	mod, err := reader.ReadString('\n')
+	root.NewFile("go.mod", []byte(
+		fmt.Sprintf(
+			"module %s\ngo %s",
+			mod,
+			strings.TrimPrefix(
+				runtime.Version(),
+				"go",
+			),
+		)))
+	return
 }
 
 // goCmd represents the go command
 var goCmd = &cobra.Command{
 	Use:   "go",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	Run: GenerateFS(GO),
+	Short: "",
+	Long:  ``,
+	Run:   GenerateFS(GO),
 }
 
 func init() {
