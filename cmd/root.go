@@ -31,7 +31,7 @@ func NewDirectory(name string) *Directory {
 	}
 }
 
-func (root *Directory) NewFile(name string, content ...[]byte) (f *File) {
+func (root *Directory) NewFile(name string, content ...string) (f *File) {
 	f = &File{
 		name,
 		[]byte{},
