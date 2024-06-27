@@ -8,7 +8,7 @@ import (
 )
 
 func HTML(cmd *cobra.Command, args []string, root *Directory) error {
-	root.NewFile("index.html",
+	root.NewFile("index.html", []byte(
 		`<!DOCTYPE html>
 <html lang="en">
     <head>
@@ -21,9 +21,9 @@ func HTML(cmd *cobra.Command, args []string, root *Directory) error {
     <body>
         <h1>Hello World</h1>
     </body>
-</html>`)
-	root.NewFile("style.css", "*,\n*::before,\n*::after {\n\tmargin: 0;\n\tpadding: 0;\n\tbox-sizing: border-box;\n}\n\n")
-	root.NewFile("script.js", "console.log('Hello World !')")
+</html>`))
+	root.NewFile("style.css", []byte("*,\n*::before,\n*::after {\n\tmargin: 0;\n\tpadding: 0;\n\tbox-sizing: border-box;\n}\n\n"))
+	root.NewFile("script.js", []byte("console.log('Hello World !')"))
 	return nil
 }
 
@@ -31,8 +31,10 @@ func init() {
 	rootCmd.AddCommand(
 		&cobra.Command{
 			Use:   "html",
-			Short: "",
-			Long:  ``,
-			Run:   GenerateFS(HTML),
+			Short: "Create an HTML project.",
+			Long: `Generate an HTML, CSS, and JavaScript project.
+
+The HTML header will reference the associated CSS and JS files.`,
+			Run: GenerateFS(HTML),
 		})
 }

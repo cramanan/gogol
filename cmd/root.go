@@ -31,7 +31,16 @@ func NewDirectory(name string) *Directory {
 	}
 }
 
-func (root *Directory) NewFile(name string, content ...string) (f *File) {
+func (root *Directory) NewDirectory(name string, files ...*File) (d *Directory) {
+	d = NewDirectory(name)
+	for _, value := range files {
+		d.NewFile(value.Name, value.Content)
+	}
+	root.Directories[name] = d
+	return d
+}
+
+func (root *Directory) NewFile(name string, content ...[]byte) (f *File) {
 	f = &File{
 		name,
 		[]byte{},
@@ -78,14 +87,22 @@ func GenerateFS(fn CobraFunc) func(cmd *cobra.Command, args []string) {
 			"readme":     "README.md",
 			"license":    "LICENSE.md",
 			"dockerfile": "Dockerfile",
-			"makefile":   "makefile",
+			"makefile":   "Makefile",
 		}
 
+		rootHasBoolFlag := rootCmd.PersistentFlags().GetBool
+
 		for flag := range files {
-			value, _ := rootCmd.PersistentFlags().GetBool(flag)
+			value, _ := rootHasBoolFlag(flag)
 			if value {
 				root.NewFile(files[flag])
 			}
+		}
+
+		tests, _ := rootHasBoolFlag("tests")
+		if tests {
+			root.NewDirectory("tests", &File{Name: ".gitkeep"})
+			fmt.Println(root.Directories)
 		}
 
 		fn(cmd, args, root)
@@ -110,12 +127,12 @@ func GenerateFS(fn CobraFunc) func(cmd *cobra.Command, args []string) {
 func (root Directory) Create(origin string) (err error) {
 	var f func(string, Directory)
 	f = func(path string, dir Directory) {
-		err = os.Mkdir(root.Name, os.ModePerm)
+		err = os.Mkdir(path, os.ModePerm)
 		if err != nil {
 			return
 		}
 		for _, file := range dir.Files {
-			ff, err := os.Create(filepath.Join(origin, path, file.Name))
+			ff, err := os.Create(filepath.Join(path, file.Name))
 			if err != nil {
 				return
 			}
@@ -129,14 +146,11 @@ func (root Directory) Create(origin string) (err error) {
 		for _, subdir := range dir.Directories {
 			f(filepath.Join(path, subdir.Name), *subdir)
 		}
-
 	}
-	f(root.Name, root)
+	f(filepath.Join(origin, root.Name), root)
 	return err
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
@@ -146,9 +160,10 @@ func Execute() {
 
 func init() {
 	rootCmd.CompletionOptions.DisableDefaultCmd = true
-	rootCmd.PersistentFlags().BoolP("readme", "r", false, "Help message for readme")
-	rootCmd.PersistentFlags().BoolP("license", "l", false, "Help message for license")
-	rootCmd.PersistentFlags().BoolP("dockerfile", "d", false, "Help message for license")
-	rootCmd.PersistentFlags().BoolP("makefile", "m", false, "Help message for makefile")
-	rootCmd.PersistentFlags().BoolP("github", "g", false, "Initialize a github repo")
+	rootCmd.PersistentFlags().BoolP("readme", "r", false, "add a README.md file")
+	rootCmd.PersistentFlags().BoolP("license", "l", false, "add a LICENSE.md file")
+	rootCmd.PersistentFlags().BoolP("dockerfile", "d", false, "add a Dockerfile")
+	rootCmd.PersistentFlags().BoolP("makefile", "m", false, "add a Makefile")
+	rootCmd.PersistentFlags().BoolP("github", "g", false, "initialize a github repo")
+	rootCmd.PersistentFlags().BoolP("tests", "t", false, "add a test directory with a .gitkeep")
 }

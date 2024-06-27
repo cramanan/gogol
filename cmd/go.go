@@ -12,16 +12,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const GODEFAULT = `package main
+func GO(cmd *cobra.Command, args []string, root *Directory) (err error) {
+	root.NewFile("main.go", []byte(
+		`package main
 
 import "fmt"
 
 func main(){
 	fmt.Println("Hello World")
-}`
-
-func GO(cmd *cobra.Command, args []string, root *Directory) (err error) {
-	root.NewFile("main.go", GODEFAULT)
+}`))
 	fmt.Print("Module name: ")
 	reader := bufio.NewReader(os.Stdin)
 	mod, err := reader.ReadString('\n')
@@ -31,11 +30,11 @@ func GO(cmd *cobra.Command, args []string, root *Directory) (err error) {
 	}
 
 	root.NewFile("go.mod",
-		fmt.Sprintf(
+		[]byte(fmt.Sprintf(
 			"module %s\n\ngo %s\n",
 			mod,
 			runtime.Version()[2:], // Remove "go"
-		))
+		)))
 	return
 }
 
@@ -43,9 +42,11 @@ func init() {
 	rootCmd.AddCommand(
 		&cobra.Command{
 			Use:   "go",
-			Short: "",
-			Long:  ``,
-			Run:   GenerateFS(GO),
+			Short: "Create a Golang project.",
+			Long: `Generate a simple Golang project. 
+The Go version specified in the generated go.mod file will match 
+the version of the Go compiler used to build gogol.`,
+			Run: GenerateFS(GO),
 		},
 	)
 }
