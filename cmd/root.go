@@ -1,40 +1,143 @@
 /*
-Copyright © 2024 MATHIAS MARCHETTI aquemaati@gmail.com
+Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 */
 package cmd
 
 import (
+	"bufio"
+	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 
+	"github.com/go-git/go-git/v5"
 	"github.com/spf13/cobra"
 )
 
-func Mkdir(name string) (err error) {
-	err = os.Mkdir(name, os.ModePerm)
-	if err != nil {
-		return err
-	}
-
-	err = os.Chdir(name)
-	if err != nil {
-		return err
-	}
-	return
+type Directory struct {
+	Name        string
+	repo        *git.Repository
+	Directories map[string]*Directory
+	Files       map[string]*File
 }
 
-func InternalError(err error) {
-	fmt.Println(err)
-	os.Exit(1)
+func NewDirectory(name string) *Directory {
+	return &Directory{
+		name,
+		nil,
+		make(map[string]*Directory),
+		make(map[string]*File),
+	}
 }
 
+func (root *Directory) NewFile(name string, content ...string) (f *File) {
+	f = &File{
+		name,
+		[]byte{},
+	}
+	for _, b := range content {
+		f.Content = append(f.Content, b...)
+	}
+	root.Files[name] = f
+	return f
+}
+
+type File struct {
+	Name    string
+	Content []byte
+}
+
+// rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:     "gogol",
-	Short:   "Create projects faster than ever.",
-	Long:    "\ngogol is a library that helps you create projects using multiple languages.\nTo create a project, run:\n  gogol [language/command] [flags...]\n\n",
-	Example: "  gogol go\n  gogol html -rlg",
+	Use:   "gogol",
+	Short: "",
+	Long:  ``,
 }
 
+type CobraFunc func(cmd *cobra.Command, args []string, root *Directory) error
+
+func GenerateFS(fn CobraFunc) func(cmd *cobra.Command, args []string) {
+	return func(cmd *cobra.Command, args []string) {
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Print("Project name: ")
+		name, err := reader.ReadString('\n')
+		if strings.Contains(name, "/") || strings.Contains(name, ".") {
+			err = errors.New("project name cannot contain '/' or '.'")
+		}
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		name = name[:len(name)-1]
+		if name == "" {
+			name = "Untitled"
+		}
+
+		root := NewDirectory(name)
+		files := map[string]string{
+			"readme":     "README.md",
+			"license":    "LICENSE.md",
+			"dockerfile": "Dockerfile",
+			"makefile":   "makefile",
+		}
+
+		for flag := range files {
+			value, _ := rootCmd.PersistentFlags().GetBool(flag)
+			if value {
+				root.NewFile(files[flag])
+			}
+		}
+
+		fn(cmd, args, root)
+		err = root.Create(".")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		github, _ := rootCmd.PersistentFlags().GetBool("github")
+		if github {
+			root.repo, err = git.PlainInit(root.Name, false)
+			if err != nil {
+				return
+			}
+		}
+
+		fmt.Printf("All set and done ✓\nYou can now run:\n  cd %s\n", name)
+	}
+}
+
+func (root Directory) Create(origin string) (err error) {
+	var f func(string, Directory)
+	f = func(path string, dir Directory) {
+		err = os.Mkdir(root.Name, os.ModePerm)
+		if err != nil {
+			return
+		}
+		for _, file := range dir.Files {
+			ff, err := os.Create(filepath.Join(origin, path, file.Name))
+			if err != nil {
+				return
+			}
+			defer ff.Close()
+			_, err = ff.Write(file.Content)
+
+			if err != nil {
+				return
+			}
+		}
+		for _, subdir := range dir.Directories {
+			f(filepath.Join(path, subdir.Name), *subdir)
+		}
+
+	}
+	f(root.Name, root)
+	return err
+}
+
+// Execute adds all child commands to the root command and sets flags appropriately.
+// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
@@ -42,12 +145,11 @@ func Execute() {
 	}
 }
 
-var README, LICENSE, GIT, DOCKERFILE, MAKEFILE bool
-
 func init() {
-	rootCmd.PersistentFlags().BoolVarP(&README, "readme", "r", false, "Add a README.md to your project.")
-	rootCmd.PersistentFlags().BoolVarP(&LICENSE, "license", "l", false, "Add a LICENSE.md to your project.")
-	rootCmd.PersistentFlags().BoolVarP(&GIT, "github", "g", false, "Change your project into a Git repository.")
-	rootCmd.PersistentFlags().BoolVarP(&DOCKERFILE, "dockerfile", "d", false, "Add a Dockerfile to your project.")
-	rootCmd.PersistentFlags().BoolVarP(&MAKEFILE, "makefile", "m", false, "Add a Makefile to your project. (only for compiled languages)")
+	rootCmd.CompletionOptions.DisableDefaultCmd = true
+	rootCmd.PersistentFlags().BoolP("readme", "r", false, "Help message for readme")
+	rootCmd.PersistentFlags().BoolP("license", "l", false, "Help message for license")
+	rootCmd.PersistentFlags().BoolP("dockerfile", "d", false, "Help message for license")
+	rootCmd.PersistentFlags().BoolP("makefile", "m", false, "Help message for makefile")
+	rootCmd.PersistentFlags().BoolP("github", "g", false, "Initialize a github repo")
 }

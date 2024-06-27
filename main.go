@@ -1,5 +1,6 @@
 /*
-Copyright © 2024  MATHIAS MARCHETTI aquemaati@gmail.com
+Copyright © 2024 NAME HERE <EMAIL ADDRESS>
+
 */
 package main
 

@@ -1,95 +1,40 @@
 /*
-Copyright © 2024 cramanan cramananjaonapro@gmail.com
+Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 */
 package cmd
 
 import (
-	"bufio"
-	"fmt"
-	"os"
-	"strings"
-
-	"github.com/cramanan/gogol/internal/tools"
-	"github.com/go-git/go-git/v5"
 	"github.com/spf13/cobra"
 )
+
+func HTML(cmd *cobra.Command, args []string, root *Directory) error {
+	root.NewFile("index.html",
+		`<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <link rel="stylesheet" href="style.css" />
+        <script src="script.js" defer></script>
+    </head>
+    <body>
+        <h1>Hello World</h1>
+    </body>
+</html>`)
+	root.NewFile("style.css", "*,\n*::before,\n*::after {\n\tmargin: 0;\n\tpadding: 0;\n\tbox-sizing: border-box;\n}\n\n")
+	root.NewFile("script.js", "console.log('Hello World !')")
+	return nil
+}
 
 // htmlCmd represents the html command
 var htmlCmd = &cobra.Command{
 	Use:   "html",
-	Short: "Create a simple HTML/CSS/JS project",
-	Long: `Create a directory containing the following file structure:
-  directory/
-    ├── index.html
-    ├── script.js
-    └── style.css
-The index.html file will link the stylesheet & the script.
-`,
-	Run: RunHTML,
-}
-
-func RunHTML(cmd *cobra.Command, args []string) {
-	fmt.Println("Starting an HTML/CSS/JS Project...")
-	root, err := tools.RetrieveYAMLdir("https://raw.githubusercontent.com/cramanan/gogol/cramanan/api/html.yaml")
-	if err != nil {
-		InternalError(err)
-	}
-	fmt.Print("Project name: ")
-	reader := bufio.NewReader(os.Stdin)
-	name, err := reader.ReadString('\n')
-	if err != nil {
-		InternalError(err)
-	}
-	name = name[:len(name)-1]
-	name = strings.ReplaceAll(name, "/", "")
-	name = strings.ReplaceAll(name, ".", "")
-	if name == "" {
-		name = "untitled"
-	}
-
-	fmt.Printf("Creating %s/ directory\n", name)
-	root.Name = name
-	f := root.Search(fmt.Sprintf("%s/index.html", root.Name))
-	if f != nil {
-		f.WriteString(tools.HTMLDEFAULT)
-	}
-
-	f = root.Search(fmt.Sprintf("%s/style.css", root.Name))
-	if f != nil {
-		f.WriteString(tools.CSSDEFAULT)
-	}
-
-	if README {
-		root.AddFile(tools.File{Name: "README.md"})
-	}
-
-	if LICENSE {
-		root.AddFile(tools.File{Name: "LICENSE.md"})
-	}
-
-	if err = root.Create("."); err != nil {
-		InternalError(err)
-	}
-
-	if GIT {
-		_, err := git.PlainInit(name, false)
-		if err != nil {
-			fmt.Println(err)
-		}
-	}
-	fmt.Println("All set and done, your files are ready !")
+	Short: "",
+	Long:  ``,
+	Run:   GenerateFS(HTML),
 }
 
 func init() {
 	rootCmd.AddCommand(htmlCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// htmlCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// htmlCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

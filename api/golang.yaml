@@ -1,7 +1,0 @@
-name: "golang-project"
-directories: null
-files:
-    - name: main.go
-    - name: go.mod
-    - name: go.sum
-    - name: main_test.go
