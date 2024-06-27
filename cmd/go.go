@@ -40,11 +40,10 @@ func GO(cmd *cobra.Command, args []string, root *Directory) (err error) {
 
 // goCmd represents the go command
 var goCmd = &cobra.Command{
-	Use:     "go",
-	Short:   "",
-	Long:    ``,
-	Aliases: []string{"golang", "GO", "GOLANG"},
-	Run:     GenerateFS(GO),
+	Use:   "go",
+	Short: "",
+	Long:  ``,
+	Run:   GenerateFS(GO),
 }
 
 func init() {

@@ -103,6 +103,8 @@ func GenerateFS(fn CobraFunc) func(cmd *cobra.Command, args []string) {
 				return
 			}
 		}
+
+		fmt.Printf("All set and done ✓\nYou can now run:\n  cd %s\n", name)
 	}
 }
 
