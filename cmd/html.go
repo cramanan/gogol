@@ -27,14 +27,12 @@ func HTML(cmd *cobra.Command, args []string, root *Directory) error {
 	return nil
 }
 
-// htmlCmd represents the html command
-var htmlCmd = &cobra.Command{
-	Use:   "html",
-	Short: "",
-	Long:  ``,
-	Run:   GenerateFS(HTML),
-}
-
 func init() {
-	rootCmd.AddCommand(htmlCmd)
+	rootCmd.AddCommand(
+		&cobra.Command{
+			Use:   "html",
+			Short: "",
+			Long:  ``,
+			Run:   GenerateFS(HTML),
+		})
 }

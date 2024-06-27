@@ -1,11 +1,8 @@
-FROM golang:1.19 AS build
+FROM golang:latest AS build
 
 WORKDIR /home/app
 
 COPY . .
-
-ENV GOOS=linux
-ENV GOARCH=amd64
 
 RUN go mod download && go build -o gogol
 

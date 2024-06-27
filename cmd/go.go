@@ -22,6 +22,7 @@ func main(){
 
 func GO(cmd *cobra.Command, args []string, root *Directory) (err error) {
 	root.NewFile("main.go", GODEFAULT)
+	fmt.Print("Module name: ")
 	reader := bufio.NewReader(os.Stdin)
 	mod, err := reader.ReadString('\n')
 	mod = mod[:len(mod)-1]
@@ -38,14 +39,13 @@ func GO(cmd *cobra.Command, args []string, root *Directory) (err error) {
 	return
 }
 
-// goCmd represents the go command
-var goCmd = &cobra.Command{
-	Use:   "go",
-	Short: "",
-	Long:  ``,
-	Run:   GenerateFS(GO),
-}
-
 func init() {
-	rootCmd.AddCommand(goCmd)
+	rootCmd.AddCommand(
+		&cobra.Command{
+			Use:   "go",
+			Short: "",
+			Long:  ``,
+			Run:   GenerateFS(GO),
+		},
+	)
 }
