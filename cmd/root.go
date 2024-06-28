@@ -73,6 +73,16 @@ var rootCmd = &cobra.Command{
 type CobraFunc func(cmd *cobra.Command, args []string, root *Directory) error
 
 func GenerateFS(fn CobraFunc) func(cmd *cobra.Command, args []string) {
+	rootHasBoolFlag := rootCmd.PersistentFlags().GetBool
+	tests, _ := rootHasBoolFlag("tests")
+	github, _ := rootHasBoolFlag("github")
+	files := map[string]string{
+		"readme":     "README.md",
+		"license":    "LICENSE.md",
+		"dockerfile": "Dockerfile",
+		"makefile":   "Makefile",
+	}
+
 	return func(cmd *cobra.Command, args []string) {
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Print("Project name: ")
@@ -90,15 +100,6 @@ func GenerateFS(fn CobraFunc) func(cmd *cobra.Command, args []string) {
 		}
 
 		root := NewDirectory(name)
-		files := map[string]string{
-			"readme":     "README.md",
-			"license":    "LICENSE.md",
-			"dockerfile": "Dockerfile",
-			"makefile":   "Makefile",
-		}
-
-		rootHasBoolFlag := rootCmd.PersistentFlags().GetBool
-
 		for flag := range files {
 			value, _ := rootHasBoolFlag(flag)
 			if value {
@@ -106,11 +107,7 @@ func GenerateFS(fn CobraFunc) func(cmd *cobra.Command, args []string) {
 			}
 		}
 
-		tests, _ := rootHasBoolFlag("tests")
 		var testsDir *Directory
-
-		github, _ := rootHasBoolFlag("github")
-
 		if tests {
 			testsDir = root.NewDirectory("tests")
 		}
