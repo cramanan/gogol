@@ -74,7 +74,6 @@ func PersistentPreRunE(cmd *cobra.Command, args []string) error {
 
 func PersistentPostRunE(cmd *cobra.Command, args []string) (err error) {
 	if cmd.Name() == "help" {
-		os.Exit(0)
 		return nil
 	}
 	err = RootDirectory.Create(".")

@@ -16,7 +16,8 @@ import (
 
 // goCmd represents the go command
 var goCmd = &cobra.Command{
-	Use: "go",
+	Use:       "go",
+	ValidArgs: []string{"web"},
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		err := cmd.Root().PersistentPreRunE(cmd, args)
 		if err != nil {
