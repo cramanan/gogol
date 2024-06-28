@@ -19,7 +19,6 @@ var goCmd = &cobra.Command{
 	Use: "go",
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		err := cmd.Root().PersistentPreRunE(cmd, args)
-		RootDirectory.NewFile("main.go")
 		if err != nil {
 			return err
 		}
@@ -37,29 +36,40 @@ var goCmd = &cobra.Command{
 			name = "untitled"
 		}
 		RootDirectory.NewFile("go.mod", []byte(
-			fmt.Sprintf("module %s\n\ngo %s",
+			fmt.Sprintf("module %s\n\ngo %s\n",
 				name,
-				runtime.Version()[2:], // remove "go"
+				runtime.Version()[2:6], // remove "go"
 			),
 		))
+		RootDirectory.NewFile("main.go", []byte("package main"))
+
 		return nil
 	},
 
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
+		mainGo, ok := RootDirectory.Files["main.go"]
+		if !ok {
+			return errors.New("no main could be created")
+		}
+		mainGo.WriteString(`
+
+import "fmt"
+			
+func main(){
+	fmt.Println("Hello World")
+}`)
+		return nil
 	},
 }
 
 var goWebCmd = &cobra.Command{
 	Use: "web",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		RootDirectory.NewDirectory("api")
 		mainGo, ok := RootDirectory.Files["main.go"]
 		if !ok {
 			return errors.New("no main could be created")
 		}
-		mainGo.WriteString(
-			`package main
-
+		mainGo.WriteString(`
 import (
 	"fmt"
 	"net/http"
@@ -67,24 +77,27 @@ import (
 			
 func main(){
 	router := http.NewServeMux()
+
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Hello World")
 	})
-
+	
 	server := http.Server{
 		Addr:    ":8080",
 		Handler: router,
 	}
+	
 	fmt.Printf("Server listening on port %s\n", server.Addr)
 	server.ListenAndServe()
-}`)
+}
+`)
 		return nil
 	},
 }
 
 func init() {
 	goCmd.AddCommand(goWebCmd)
-	RootCmd.AddCommand(goCmd)
+	rootCmd.AddCommand(goCmd)
 
 	// Here you will define your flags and configuration settings.
 

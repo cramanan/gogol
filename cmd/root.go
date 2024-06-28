@@ -17,7 +17,7 @@ import (
 var RootDirectory = NewDirectory("untitled")
 
 func init() {
-	BoolP := RootCmd.PersistentFlags().BoolP
+	BoolP := rootCmd.PersistentFlags().BoolP
 	BoolP("readme", "r", false, "add a README.md file")
 	BoolP("license", "l", false, "add a LICENSE.md file")
 	BoolP("dockerfile", "d", false, "add a Dockerfile")
@@ -27,7 +27,7 @@ func init() {
 	BoolP("env", "e", false, "add a .env file")
 }
 
-var RootCmd = &cobra.Command{
+var rootCmd = &cobra.Command{
 	Use:                "gogol",
 	PersistentPreRunE:  PersistentPreRunE,
 	PersistentPostRunE: PersistentPostRunE,
@@ -36,6 +36,9 @@ var RootCmd = &cobra.Command{
 }
 
 func PersistentPreRunE(cmd *cobra.Command, args []string) error {
+	if cmd.Name() == "help" {
+		return nil
+	}
 	rootHasBoolFlag := cmd.Root().PersistentFlags().GetBool
 	files := map[string]string{
 		"readme":     "README.md",
@@ -70,6 +73,10 @@ func PersistentPreRunE(cmd *cobra.Command, args []string) error {
 }
 
 func PersistentPostRunE(cmd *cobra.Command, args []string) (err error) {
+	if cmd.Name() == "help" {
+		os.Exit(0)
+		return nil
+	}
 	err = RootDirectory.Create(".")
 	if err != nil {
 		return err
@@ -82,7 +89,7 @@ func PersistentPostRunE(cmd *cobra.Command, args []string) (err error) {
 }
 
 func Execute() {
-	err := RootCmd.Execute()
+	err := rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)
 	}
