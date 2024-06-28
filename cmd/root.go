@@ -31,6 +31,13 @@ func NewDirectory(name string) *Directory {
 	}
 }
 
+func NewFile(name string) *File {
+	return &File{
+		name,
+		[]byte{},
+	}
+}
+
 func (root *Directory) NewDirectory(name string, files ...*File) (d *Directory) {
 	d = NewDirectory(name)
 	for _, value := range files {
@@ -79,7 +86,7 @@ func GenerateFS(fn CobraFunc) func(cmd *cobra.Command, args []string) {
 		}
 		name = name[:len(name)-1]
 		if name == "" {
-			name = "Untitled"
+			name = "untitled"
 		}
 
 		root := NewDirectory(name)
@@ -99,10 +106,24 @@ func GenerateFS(fn CobraFunc) func(cmd *cobra.Command, args []string) {
 			}
 		}
 
+		github, _ := rootHasBoolFlag("github")
+		if github {
+			root.NewFile(".gitignore")
+			defer func() {
+				root.repo, err = git.PlainInit(root.Name, false)
+				if err != nil {
+					return
+				}
+			}()
+		}
+
 		tests, _ := rootHasBoolFlag("tests")
 		if tests {
-			root.NewDirectory("tests", &File{Name: ".gitkeep"})
-			fmt.Println(root.Directories)
+			args := []*File{}
+			if github {
+				args = append(args, NewFile(".gitkeep"))
+			}
+			root.NewDirectory("tests", args...)
 		}
 
 		fn(cmd, args, root)
@@ -110,14 +131,6 @@ func GenerateFS(fn CobraFunc) func(cmd *cobra.Command, args []string) {
 		if err != nil {
 			fmt.Println(err)
 			return
-		}
-
-		github, _ := rootCmd.PersistentFlags().GetBool("github")
-		if github {
-			root.repo, err = git.PlainInit(root.Name, false)
-			if err != nil {
-				return
-			}
 		}
 
 		fmt.Printf("All set and done ✓\nYou can now run:\n  cd %s\n", name)
