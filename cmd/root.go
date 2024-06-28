@@ -79,6 +79,7 @@ func GenerateFS(fn CobraFunc) func(cmd *cobra.Command, args []string) {
 		"license":    "LICENSE.md",
 		"dockerfile": "Dockerfile",
 		"makefile":   "Makefile",
+		"env":        ".env",
 	}
 
 	return func(cmd *cobra.Command, args []string) {
@@ -126,7 +127,10 @@ func GenerateFS(fn CobraFunc) func(cmd *cobra.Command, args []string) {
 			}()
 		}
 
-		fn(cmd, args, root)
+		err = fn(cmd, args, root)
+		if err != nil {
+			fmt.Println(err)
+		}
 		err = root.Create(".")
 		if err != nil {
 			fmt.Println(err)
@@ -173,10 +177,12 @@ func Execute() {
 
 func init() {
 	rootCmd.CompletionOptions.DisableDefaultCmd = true
-	rootCmd.PersistentFlags().BoolP("readme", "r", false, "add a README.md file")
-	rootCmd.PersistentFlags().BoolP("license", "l", false, "add a LICENSE.md file")
-	rootCmd.PersistentFlags().BoolP("dockerfile", "d", false, "add a Dockerfile")
-	rootCmd.PersistentFlags().BoolP("makefile", "m", false, "add a Makefile")
-	rootCmd.PersistentFlags().BoolP("github", "g", false, "initialize a github repo")
-	rootCmd.PersistentFlags().BoolP("tests", "t", false, "add a test directory with a .gitkeep")
+	BoolP := rootCmd.PersistentFlags().BoolP
+	BoolP("readme", "r", false, "add a README.md file")
+	BoolP("license", "l", false, "add a LICENSE.md file")
+	BoolP("dockerfile", "d", false, "add a Dockerfile")
+	BoolP("makefile", "m", false, "add a Makefile")
+	BoolP("github", "g", false, "initialize a github repo")
+	BoolP("tests", "t", false, "add a test directory with a .gitkeep")
+	BoolP("env", "e", false, "add a .env file")
 }
