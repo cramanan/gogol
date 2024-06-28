@@ -106,24 +106,26 @@ func GenerateFS(fn CobraFunc) func(cmd *cobra.Command, args []string) {
 			}
 		}
 
+		tests, _ := rootHasBoolFlag("tests")
+		var testsDir *Directory
+
 		github, _ := rootHasBoolFlag("github")
+
+		if tests {
+			testsDir = root.NewDirectory("tests")
+		}
+
 		if github {
 			root.NewFile(".gitignore")
+			if testsDir != nil {
+				testsDir.NewFile(".gitkeep")
+			}
 			defer func() {
 				root.repo, err = git.PlainInit(root.Name, false)
 				if err != nil {
 					return
 				}
 			}()
-		}
-
-		tests, _ := rootHasBoolFlag("tests")
-		if tests {
-			args := []*File{}
-			if github {
-				args = append(args, NewFile(".gitkeep"))
-			}
-			root.NewDirectory("tests", args...)
 		}
 
 		fn(cmd, args, root)
