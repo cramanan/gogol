@@ -74,8 +74,6 @@ type CobraFunc func(cmd *cobra.Command, args []string, root *Directory) error
 
 func GenerateFS(fn CobraFunc) func(cmd *cobra.Command, args []string) {
 	rootHasBoolFlag := rootCmd.PersistentFlags().GetBool
-	tests, _ := rootHasBoolFlag("tests")
-	github, _ := rootHasBoolFlag("github")
 	files := map[string]string{
 		"readme":     "README.md",
 		"license":    "LICENSE.md",
@@ -106,6 +104,9 @@ func GenerateFS(fn CobraFunc) func(cmd *cobra.Command, args []string) {
 				root.NewFile(files[flag])
 			}
 		}
+
+		tests, _ := rootHasBoolFlag("tests")
+		github, _ := rootHasBoolFlag("github")
 
 		var testsDir *Directory
 		if tests {
