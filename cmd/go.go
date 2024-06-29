@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"runtime"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -39,7 +38,7 @@ var goCmd = &cobra.Command{
 		RootDirectory.NewFile("go.mod", []byte(
 			fmt.Sprintf("module %s\n\ngo %s\n",
 				name,
-				runtime.Version()[2:6], // remove "go"
+				"1.19",
 			),
 		))
 		RootDirectory.NewFile("main.go", []byte("package main"))
@@ -92,6 +91,14 @@ func main(){
 	server.ListenAndServe()
 }
 `)
+
+		api := RootDirectory.NewDirectory("api")
+		api.NewDirectory("models")
+		api.NewDirectory("controllers")
+
+		static := RootDirectory.NewDirectory("static")
+		static.NewDirectory("js")
+		static.NewDirectory("css")
 		return nil
 	},
 }
@@ -99,14 +106,4 @@ func main(){
 func init() {
 	goCmd.AddCommand(goWebCmd)
 	rootCmd.AddCommand(goCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// goCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// goCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

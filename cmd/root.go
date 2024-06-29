@@ -17,6 +17,7 @@ var RootDirectory = NewDirectory("untitled")
 
 func init() {
 	BoolP := rootCmd.PersistentFlags().BoolP
+	BoolP("all", "a", false, "all defaults files")
 	BoolP("dockerfile", "d", false, "add a Dockerfile")
 	BoolP("env", "e", false, "add a .env file")
 	BoolP("github", "g", false, "setup every .git files")
