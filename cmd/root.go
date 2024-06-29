@@ -10,7 +10,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/go-git/go-git/v5"
 	"github.com/spf13/cobra"
 )
 
@@ -18,17 +17,19 @@ var RootDirectory = NewDirectory("untitled")
 
 func init() {
 	BoolP := rootCmd.PersistentFlags().BoolP
-	BoolP("readme", "r", false, "add a README.md file")
-	BoolP("license", "l", false, "add a LICENSE.md file")
 	BoolP("dockerfile", "d", false, "add a Dockerfile")
-	BoolP("makefile", "m", false, "add a Makefile")
-	BoolP("github", "g", false, "initialize a github repo")
-	BoolP("tests", "t", false, "add a test directory with a .gitkeep")
 	BoolP("env", "e", false, "add a .env file")
+	BoolP("github", "g", false, "setup every .git files")
+	BoolP("license", "l", false, "add a LICENSE.md file")
+	BoolP("makefile", "m", false, "add a Makefile")
+	BoolP("readme", "r", false, "add a README.md file")
+	BoolP("tests", "t", false, "add a test directory with a .gitkeep")
 }
 
 var rootCmd = &cobra.Command{
 	Use:                "gogol",
+	Short:              "Create a Go project",
+	Long:               `Generate a simple Golang pro`,
 	PersistentPreRunE:  PersistentPreRunE,
 	PersistentPostRunE: PersistentPostRunE,
 	CompletionOptions:  cobra.CompletionOptions{DisableDefaultCmd: true},
@@ -41,11 +42,11 @@ func PersistentPreRunE(cmd *cobra.Command, args []string) error {
 	}
 	rootHasBoolFlag := cmd.Root().PersistentFlags().GetBool
 	files := map[string]string{
-		"readme":     "README.md",
-		"license":    "LICENSE.md",
 		"dockerfile": "Dockerfile",
-		"makefile":   "Makefile",
 		"env":        ".env",
+		"license":    "LICENSE.md",
+		"makefile":   "Makefile",
+		"readme":     "README.md",
 	}
 
 	for flag := range files {
@@ -69,6 +70,21 @@ func PersistentPreRunE(cmd *cobra.Command, args []string) error {
 	}
 	RootDirectory.Name = name
 
+	github, _ := rootHasBoolFlag("github")
+	if github {
+		RootDirectory.NewFile(".gitignore")
+	}
+
+	tests, _ := rootHasBoolFlag("tests")
+	if tests {
+		RootDirectory.NewDirectory("tests", &File{Name: ".gitkeep"})
+		args := []*File{}
+		if github {
+			args = append(args, NewFile(".gitkeep"))
+		}
+		RootDirectory.NewDirectory("tests", args...)
+	}
+
 	return nil
 }
 
@@ -76,14 +92,11 @@ func PersistentPostRunE(cmd *cobra.Command, args []string) (err error) {
 	if cmd.Name() == "help" {
 		return nil
 	}
-	err = RootDirectory.Create(".")
-	if err != nil {
+
+	if err = RootDirectory.Create("."); err != nil {
 		return err
 	}
 
-	if github, _ := cmd.Root().PersistentFlags().GetBool("github"); github {
-		_, err = git.PlainInit(RootDirectory.Name, false)
-	}
 	return
 }
 
