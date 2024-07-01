@@ -3,21 +3,17 @@ package cmd
 import (
 	"os"
 	"path/filepath"
-
-	"github.com/go-git/go-git/v5"
 )
 
 type Directory struct {
-	Name        string
-	repo        *git.Repository
-	Directories map[string]*Directory
-	Files       map[string]*File
+	Name        string                `json:"name"`
+	Directories map[string]*Directory `json:"directories"`
+	Files       map[string]*File      `json:"files"`
 }
 
 func NewDirectory(name string) *Directory {
 	return &Directory{
 		name,
-		nil,
 		make(map[string]*Directory),
 		make(map[string]*File),
 	}
@@ -47,12 +43,7 @@ func (root Directory) Create(origin string) (err error) {
 			return
 		}
 		for _, file := range dir.Files {
-			ff, err := os.Create(filepath.Join(path, file.Name))
-			if err != nil {
-				return
-			}
-			defer ff.Close()
-			_, err = ff.Write(file.Content)
+			err = file.Create(path)
 
 			if err != nil {
 				return
@@ -64,6 +55,38 @@ func (root Directory) Create(origin string) (err error) {
 	}
 	f(filepath.Join(origin, root.Name), root)
 	return err
+}
+
+func (root *Directory) Read(origin string) error {
+	var f func(string, *Directory) error
+	f = func(path string, dir *Directory) error {
+		entries, err := os.ReadDir(path)
+		if err != nil {
+			return err
+		}
+
+		for _, entry := range entries {
+			if entry.IsDir() {
+				if entry.Name() == ".git" {
+					continue
+				}
+				subdir := dir.NewDirectory(entry.Name())
+				err = f(filepath.Join(path, entry.Name()), subdir)
+				if err != nil {
+					return err
+				}
+			} else {
+				file := dir.NewFile(entry.Name())
+				file.Content, err = os.ReadFile(filepath.Join(path, entry.Name()))
+				if err != nil {
+					return err
+				}
+			}
+		}
+
+		return nil
+	}
+	return f(origin, root)
 }
 
 func (root *Directory) NewFile(name string, content ...[]byte) (f *File) {
@@ -79,10 +102,21 @@ func (root *Directory) NewFile(name string, content ...[]byte) (f *File) {
 }
 
 type File struct {
-	Name    string
-	Content []byte
+	Name    string `json:"name"`
+	Content []byte `json:"content"`
 }
 
 func (f *File) WriteString(s string) {
 	f.Content = append(f.Content, s...)
+}
+
+func (f File) Create(origin string) error {
+	osf, err := os.Create(filepath.Join(origin, f.Name))
+	if err != nil {
+		return err
+	}
+	defer osf.Close()
+
+	_, err = osf.Write(f.Content)
+	return err
 }

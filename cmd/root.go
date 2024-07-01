@@ -28,7 +28,7 @@ const (
 
 func init() {
 	BoolP := rootCmd.PersistentFlags().BoolP
-	// BoolP("all", "a", false, "all defaults files")
+
 	BoolP(FLAG_DOCKER, "d", false, "add a Dockerfile")
 	BoolP(FLAG_ENV, "e", false, "add a .env file")
 	BoolP(FLAG_GITHUB, "g", false, "setup every .git files")
@@ -51,7 +51,7 @@ in the list of available languages.`,
 }
 
 func PersistentPreRunE(cmd *cobra.Command, args []string) error {
-	if cmd.Name() == "help" {
+	if cmd.GroupID != GROUP_LANG {
 		return nil
 	}
 
@@ -104,7 +104,7 @@ func PersistentPreRunE(cmd *cobra.Command, args []string) error {
 }
 
 func PersistentPostRunE(cmd *cobra.Command, args []string) (err error) {
-	if cmd.Name() == "help" {
+	if cmd.GroupID != GROUP_LANG {
 		return nil
 	}
 
