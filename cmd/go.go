@@ -14,10 +14,12 @@ import (
 )
 
 func init() {
-	rootCmd.AddGroup(&cobra.Group{
+	langGrp := &cobra.Group{
 		ID:    GROUP_LANG,
 		Title: "Languages",
-	})
+	}
+	rootCmd.AddGroup(langGrp)
+	goCmd.AddGroup(langGrp)
 	goCmd.AddCommand(goWebCmd)
 	rootCmd.AddCommand(goCmd)
 }
@@ -73,7 +75,8 @@ func main(){
 }
 
 var goWebCmd = &cobra.Command{
-	Use: "web",
+	Use:     "web",
+	GroupID: GROUP_LANG,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		mainGo, ok := RootDirectory.Files["main.go"]
 		if !ok {

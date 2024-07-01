@@ -43,7 +43,12 @@ func (root Directory) Create(origin string) (err error) {
 			return
 		}
 		for _, file := range dir.Files {
-			err = file.Create(path)
+			ff, err := os.Create(filepath.Join(path, file.Name))
+			if err != nil {
+				return
+			}
+			defer ff.Close()
+			_, err = ff.Write(file.Content)
 
 			if err != nil {
 				return
