@@ -9,7 +9,8 @@ import (
 
 // htmlCmd represents the html command
 var htmlCmd = &cobra.Command{
-	Use: "html",
+	GroupID: GROUP_LANG,
+	Use:     "html",
 	Run: func(cmd *cobra.Command, args []string) {
 		RootDirectory.NewFile("index.html", []byte(
 			`<!DOCTYPE html>

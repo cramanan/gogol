@@ -15,22 +15,35 @@ import (
 
 var RootDirectory = NewDirectory("untitled")
 
+const (
+	GROUP_LANG = "LANG"
+
+	FLAG_DOCKER   = "dockerfile"
+	FLAG_ENV      = "env"
+	FLAG_GITHUB   = "github"
+	FLAG_LICENSE  = "license"
+	FLAG_MAKEFILE = "makefile"
+	FLAG_README   = "readme"
+)
+
 func init() {
 	BoolP := rootCmd.PersistentFlags().BoolP
-	BoolP("all", "a", false, "all defaults files")
-	BoolP("dockerfile", "d", false, "add a Dockerfile")
-	BoolP("env", "e", false, "add a .env file")
-	BoolP("github", "g", false, "setup every .git files")
-	BoolP("license", "l", false, "add a LICENSE.md file")
-	BoolP("makefile", "m", false, "add a Makefile")
-	BoolP("readme", "r", false, "add a README.md file")
-	BoolP("tests", "t", false, "add a test directory with a .gitkeep")
+	// BoolP("all", "a", false, "all defaults files")
+	BoolP(FLAG_DOCKER, "d", false, "add a Dockerfile")
+	BoolP(FLAG_ENV, "e", false, "add a .env file")
+	BoolP(FLAG_GITHUB, "g", false, "setup every .git files")
+	BoolP(FLAG_LICENSE, "l", false, "add a LICENSE.md file")
+	BoolP(FLAG_MAKEFILE, "m", false, "add a Makefile")
+	BoolP(FLAG_README, "r", false, "add a README.md file")
+	BoolP("tests", "t", false, "add a test directory")
 }
 
 var rootCmd = &cobra.Command{
-	Use:                "gogol",
-	Short:              "Create a Go project",
-	Long:               `Generate a simple Golang pro`,
+	Use:   "gogol",
+	Short: "Create projects faster than ever",
+	Long: `
+Generate simple projects directory structures
+in the list of available languages.`,
 	PersistentPreRunE:  PersistentPreRunE,
 	PersistentPostRunE: PersistentPostRunE,
 	CompletionOptions:  cobra.CompletionOptions{DisableDefaultCmd: true},
@@ -41,13 +54,14 @@ func PersistentPreRunE(cmd *cobra.Command, args []string) error {
 	if cmd.Name() == "help" {
 		return nil
 	}
+
 	rootHasBoolFlag := cmd.Root().PersistentFlags().GetBool
 	files := map[string]string{
-		"dockerfile": "Dockerfile",
-		"env":        ".env",
-		"license":    "LICENSE.md",
-		"makefile":   "Makefile",
-		"readme":     "README.md",
+		FLAG_DOCKER:   FLAG_DOCKER,
+		FLAG_ENV:      ".env",
+		FLAG_LICENSE:  "LICENSE.md",
+		FLAG_MAKEFILE: FLAG_MAKEFILE,
+		FLAG_README:   "README.md",
 	}
 
 	for flag := range files {
@@ -71,7 +85,7 @@ func PersistentPreRunE(cmd *cobra.Command, args []string) error {
 	}
 	RootDirectory.Name = name
 
-	github, _ := rootHasBoolFlag("github")
+	github, _ := rootHasBoolFlag(FLAG_GITHUB)
 	if github {
 		RootDirectory.NewFile(".gitignore")
 	}

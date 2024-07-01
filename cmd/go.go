@@ -13,9 +13,19 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func init() {
+	rootCmd.AddGroup(&cobra.Group{
+		ID:    GROUP_LANG,
+		Title: "Languages",
+	})
+	goCmd.AddCommand(goWebCmd)
+	rootCmd.AddCommand(goCmd)
+}
+
 // goCmd represents the go command
 var goCmd = &cobra.Command{
 	Use:       "go",
+	GroupID:   GROUP_LANG,
 	ValidArgs: []string{"web"},
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		err := cmd.Root().PersistentPreRunE(cmd, args)
@@ -101,9 +111,4 @@ func main(){
 		static.NewDirectory("css")
 		return nil
 	},
-}
-
-func init() {
-	goCmd.AddCommand(goWebCmd)
-	rootCmd.AddCommand(goCmd)
 }
