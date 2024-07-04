@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 )
@@ -35,31 +36,33 @@ func (root *Directory) NewDirectory(name string, files ...*File) (d *Directory) 
 	return d
 }
 
-func (root Directory) Create(origin string) (err error) {
-	var f func(string, Directory)
-	f = func(path string, dir Directory) {
-		err = os.Mkdir(path, os.ModePerm)
+func (root Directory) Create(origin string) error {
+	var f func(string, Directory) error
+	f = func(path string, dir Directory) error {
+		err := os.Mkdir(path, os.ModePerm)
 		if err != nil {
-			return
+			return fmt.Errorf("error creating directory: %s", err.Error())
 		}
-		for _, file := range dir.Files {
-			ff, err := os.Create(filepath.Join(path, file.name))
+		for name, file := range dir.Files {
+			ff, err := os.Create(filepath.Join(path, name))
 			if err != nil {
-				return
+				return fmt.Errorf("error creating file: %s", err.Error())
 			}
 			defer ff.Close()
 			_, err = ff.Write(file.content)
-
 			if err != nil {
-				return
+				return err
 			}
 		}
 		for _, subdir := range dir.Directories {
-			f(filepath.Join(path, subdir.Name), *subdir)
+			err = f(filepath.Join(path, subdir.Name), *subdir)
+			if err != nil {
+				return err
+			}
 		}
+		return nil
 	}
-	f(filepath.Join(origin, root.Name), root)
-	return err
+	return f(filepath.Join(origin, root.Name), root)
 }
 
 func (root *Directory) Read(origin string) error {
@@ -72,9 +75,6 @@ func (root *Directory) Read(origin string) error {
 
 		for _, entry := range entries {
 			if entry.IsDir() {
-				if entry.Name() == ".git" {
-					continue
-				}
 				subdir := dir.NewDirectory(entry.Name())
 				err = f(filepath.Join(path, entry.Name()), subdir)
 				if err != nil {

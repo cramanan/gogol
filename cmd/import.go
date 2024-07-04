@@ -21,12 +21,12 @@ var importCmd = &cobra.Command{
 
 		dt, err := os.ReadFile(args[0])
 		if err != nil {
-			return err
+			return fmt.Errorf("error reading: %s", err.Error())
 		}
 
 		err = json.Unmarshal(dt, &RootDirectory)
 		if err != nil {
-			return err
+			return fmt.Errorf("error unmarshaling : %s", err.Error())
 		}
 
 		return RootDirectory.Create(".")
