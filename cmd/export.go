@@ -29,11 +29,13 @@ var exportCmd = &cobra.Command{
 		output, _ := cmd.Flags().GetString("output")
 		expFile := NewFile(output + ".json")
 
-		expFile.Content, err = json.Marshal(RootDirectory)
-
+		b, err := json.MarshalIndent(RootDirectory, "", "\t")
 		if err != nil {
 			return err
 		}
+
+		expFile.Write(b)
+
 		return expFile.Create(".")
 	},
 }

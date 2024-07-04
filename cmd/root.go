@@ -92,7 +92,7 @@ func PersistentPreRunE(cmd *cobra.Command, args []string) error {
 
 	tests, _ := rootHasBoolFlag("tests")
 	if tests {
-		RootDirectory.NewDirectory("tests", &File{Name: ".gitkeep"})
+		RootDirectory.NewDirectory("tests")
 		args := []*File{}
 		if github {
 			args = append(args, NewFile(".gitkeep"))

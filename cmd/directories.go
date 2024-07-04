@@ -29,7 +29,7 @@ func NewFile(name string) *File {
 func (root *Directory) NewDirectory(name string, files ...*File) (d *Directory) {
 	d = NewDirectory(name)
 	for _, value := range files {
-		d.NewFile(value.Name, value.Content)
+		d.NewFile(value.name, value.content)
 	}
 	root.Directories[name] = d
 	return d
@@ -43,12 +43,12 @@ func (root Directory) Create(origin string) (err error) {
 			return
 		}
 		for _, file := range dir.Files {
-			ff, err := os.Create(filepath.Join(path, file.Name))
+			ff, err := os.Create(filepath.Join(path, file.name))
 			if err != nil {
 				return
 			}
 			defer ff.Close()
-			_, err = ff.Write(file.Content)
+			_, err = ff.Write(file.content)
 
 			if err != nil {
 				return
@@ -82,7 +82,7 @@ func (root *Directory) Read(origin string) error {
 				}
 			} else {
 				file := dir.NewFile(entry.Name())
-				file.Content, err = os.ReadFile(filepath.Join(path, entry.Name()))
+				file.content, err = os.ReadFile(filepath.Join(path, entry.Name()))
 				if err != nil {
 					return err
 				}
@@ -100,28 +100,32 @@ func (root *Directory) NewFile(name string, content ...[]byte) (f *File) {
 		[]byte{},
 	}
 	for _, b := range content {
-		f.Content = append(f.Content, b...)
+		f.content = append(f.content, b...)
 	}
 	root.Files[name] = f
 	return f
 }
 
 type File struct {
-	Name    string `json:"name"`
-	Content []byte `json:"content"`
+	name    string
+	content []byte
+}
+
+func (f *File) Write(b []byte) {
+	f.content = append(f.content, b...)
 }
 
 func (f *File) WriteString(s string) {
-	f.Content = append(f.Content, s...)
+	f.content = append(f.content, s...)
 }
 
 func (f File) Create(origin string) error {
-	osf, err := os.Create(filepath.Join(origin, f.Name))
+	osf, err := os.Create(filepath.Join(origin, f.name))
 	if err != nil {
 		return err
 	}
 	defer osf.Close()
 
-	_, err = osf.Write(f.Content)
+	_, err = osf.Write(f.content)
 	return err
 }
