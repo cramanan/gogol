@@ -86,7 +86,7 @@ creates the file:
     },
     "main.go": {
       "name": "main.go",
-      "content": "cGFja2FnZSBtYWluCgppbXBvcnQgImZtdCIKCQkJCmZ1bmMgbWFpbigpewoJZm10LlByaW50bG4oIkhlbGxvIFdvcmxkIikKfQ=="
+      "content": "package main"
     }
   }
 }
