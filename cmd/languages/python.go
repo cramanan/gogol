@@ -13,15 +13,15 @@ import (
 var pythonroot = &cobra.Command{
 	Use:     "python",
 	GroupID: GROUP_LANG,
-	RunE: func(command *cobra.Command, args []string) error {
+	PreRunE: LanguagePreRunE,
+	Run: func(command *cobra.Command, args []string) {
 		cmd.RootDirectory.NewFile("__init__.py")
 		cmd.RootDirectory.NewFile("__main__.py", []byte("print(\"Hello World\")"))
 		cmd.RootDirectory.NewFile("setup.py")
 		cmd.RootDirectory.NewFile("requirements.txt")
 		cmd.RootDirectory.NewFile("__init__.py")
-
-		return nil
 	},
+	PostRunE: LanguagePostRunE,
 }
 
 func init() {

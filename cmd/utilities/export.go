@@ -28,7 +28,8 @@ var exportCmd = &cobra.Command{
 		}
 
 		output, _ := command.Flags().GetString("output")
-		expFile := cmd.NewFile(output + ".json")
+		expFile := cmd.NewFile(fmt.Sprintf("%s.json", output))
+		cmd.RootDirectory.Name = output
 
 		b, err := json.MarshalIndent(cmd.RootDirectory, "", "\t")
 		if err != nil {
