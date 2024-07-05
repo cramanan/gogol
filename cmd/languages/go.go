@@ -17,12 +17,10 @@ import (
 const GROUP_LANG = "LANG"
 
 func init() {
-	langGrp := &cobra.Group{
+	cmd.RootCmd.AddGroup(&cobra.Group{
 		ID:    GROUP_LANG,
 		Title: "Languages",
-	}
-	cmd.RootCmd.AddGroup(langGrp)
-	goCmd.AddGroup(langGrp)
+	})
 	goCmd.AddCommand(goWebCmd)
 	cmd.RootCmd.AddCommand(goCmd)
 }
@@ -132,8 +130,7 @@ func main(){
 }
 
 var goWebCmd = &cobra.Command{
-	Use:     "web",
-	GroupID: GROUP_LANG,
+	Use: "web",
 	Run: func(command *cobra.Command, args []string) {
 		mainGo, ok := cmd.RootDirectory.Files["main.go"]
 		if !ok {
