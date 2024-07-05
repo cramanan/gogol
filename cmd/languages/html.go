@@ -13,8 +13,7 @@ var htmlCmd = &cobra.Command{
 	GroupID: GROUP_LANG,
 	Use:     "html",
 	Run: func(command *cobra.Command, args []string) {
-		cmd.RootDirectory.NewFile("index.html", []byte(
-			`<!DOCTYPE html>
+		cmd.RootDirectory.NewFile("index.html", (`<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
@@ -27,8 +26,8 @@ var htmlCmd = &cobra.Command{
         <h1>Hello World</h1>
     </body>
 </html>`))
-		cmd.RootDirectory.NewFile("style.css", []byte("*,\n*::before,\n*::after {\n\tmargin: 0;\n\tpadding: 0;\n\tbox-sizing: border-box;\n}\n\n"))
-		cmd.RootDirectory.NewFile("script.js", []byte("console.log('Hello World !')"))
+		cmd.RootDirectory.NewFile("style.css", ("*,\n*::before,\n*::after {\n\tmargin: 0;\n\tpadding: 0;\n\tbox-sizing: border-box;\n}\n\n"))
+		cmd.RootDirectory.NewFile("script.js", ("console.log('Hello World !')"))
 	},
 }
 

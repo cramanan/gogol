@@ -101,13 +101,12 @@ var goCmd = &cobra.Command{
 		if name == "" {
 			name = "untitled"
 		}
-		cmd.RootDirectory.NewFile("go.mod", []byte(
+		cmd.RootDirectory.NewFile("go.mod",
 			fmt.Sprintf("module %s\n\ngo %s\n",
 				name,
 				"1.19",
-			),
-		))
-		cmd.RootDirectory.NewFile("main.go", []byte("package main"))
+			))
+		cmd.RootDirectory.NewFile("main.go", ("package main"))
 
 		return nil
 	},
@@ -160,10 +159,10 @@ func main(){
 `)
 
 		api := cmd.RootDirectory.NewDirectory("api")
-		api.NewFile("api.go", []byte("package api"))
+		api.NewFile("api.go", ("package api"))
 		for _, name := range []string{"models", "controllers"} {
 			directory := api.NewDirectory(name)
-			directory.NewFile(fmt.Sprintf("%s.go", name), []byte(fmt.Sprintf("package %s", name)))
+			directory.NewFile(fmt.Sprintf("%s.go", name), (fmt.Sprintf("package %s", name)))
 		}
 
 		static := cmd.RootDirectory.NewDirectory("static")
