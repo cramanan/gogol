@@ -1,9 +1,10 @@
 /*
 Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 */
-package cmd
+package languages
 
 import (
+	"github.com/cramanan/gogol/cmd"
 	"github.com/spf13/cobra"
 )
 
@@ -11,8 +12,8 @@ import (
 var htmlCmd = &cobra.Command{
 	GroupID: GROUP_LANG,
 	Use:     "html",
-	Run: func(cmd *cobra.Command, args []string) {
-		RootDirectory.NewFile("index.html", []byte(
+	Run: func(command *cobra.Command, args []string) {
+		cmd.RootDirectory.NewFile("index.html", []byte(
 			`<!DOCTYPE html>
 <html lang="en">
     <head>
@@ -26,13 +27,13 @@ var htmlCmd = &cobra.Command{
         <h1>Hello World</h1>
     </body>
 </html>`))
-		RootDirectory.NewFile("style.css", []byte("*,\n*::before,\n*::after {\n\tmargin: 0;\n\tpadding: 0;\n\tbox-sizing: border-box;\n}\n\n"))
-		RootDirectory.NewFile("script.js", []byte("console.log('Hello World !')"))
+		cmd.RootDirectory.NewFile("style.css", []byte("*,\n*::before,\n*::after {\n\tmargin: 0;\n\tpadding: 0;\n\tbox-sizing: border-box;\n}\n\n"))
+		cmd.RootDirectory.NewFile("script.js", []byte("console.log('Hello World !')"))
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(htmlCmd)
+	cmd.RootCmd.AddCommand(htmlCmd)
 
 	// Here you will define your flags and configuration settings.
 
