@@ -86,7 +86,7 @@ func (root *Directory) Read(origin string) error {
 				if err != nil {
 					return err
 				}
-				file.WriteString(string(b))
+				file.Write(b)
 			}
 		}
 
@@ -110,6 +110,10 @@ func (root *Directory) NewFile(name string, content ...string) (f *File) {
 type File struct {
 	name    string
 	Content string `json:"content"`
+}
+
+func (f *File) Write(s []byte) {
+	f.Content = fmt.Sprintf("%s%s", f.Content, string(s))
 }
 
 func (f *File) WriteString(s string) {

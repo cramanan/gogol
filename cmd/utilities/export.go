@@ -36,7 +36,7 @@ var exportCmd = &cobra.Command{
 			return err
 		}
 
-		expFile.WriteString(string(b))
+		expFile.Write(b)
 
 		return expFile.Create(".")
 	},
