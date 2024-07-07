@@ -26,7 +26,7 @@ func init() {
 }
 
 func LanguagePreRunE(command *cobra.Command, args []string) error {
-	rootHasBoolFlag := command.PersistentFlags().GetBool
+	HasBoolFlag := command.PersistentFlags().GetBool
 	files := map[string]string{
 		cmd.FLAG_DOCKER:   cmd.FLAG_DOCKER,
 		cmd.FLAG_ENV:      ".env",
@@ -36,7 +36,7 @@ func LanguagePreRunE(command *cobra.Command, args []string) error {
 	}
 
 	for flag := range files {
-		value, _ := rootHasBoolFlag(flag)
+		value, _ := HasBoolFlag(flag)
 		if value {
 			cmd.RootDirectory.NewFile(files[flag])
 		}
@@ -56,12 +56,12 @@ func LanguagePreRunE(command *cobra.Command, args []string) error {
 	}
 	cmd.RootDirectory.Name = name
 
-	github, _ := rootHasBoolFlag(cmd.FLAG_GITHUB)
+	github, _ := HasBoolFlag(cmd.FLAG_GITHUB)
 	if github {
 		cmd.RootDirectory.NewFile(".gitignore")
 	}
 
-	tests, _ := rootHasBoolFlag("tests")
+	tests, _ := HasBoolFlag("tests")
 	if tests {
 		cmd.RootDirectory.NewDirectory("tests")
 		args := []*cmd.File{}
