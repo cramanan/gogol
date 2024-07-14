@@ -20,12 +20,21 @@ const (
 	FLAG_README   = "readme"
 )
 
+var FILES_FLAGS = map[string]string{
+	FLAG_DOCKER:   FLAG_DOCKER,
+	FLAG_ENV:      ".env",
+	FLAG_LICENSE:  "LICENSE.md",
+	FLAG_MAKEFILE: FLAG_MAKEFILE,
+	FLAG_README:   "README.md",
+	FLAG_GITHUB:   ".gitignore",
+}
+
 func init() {
 	BoolP := RootCmd.PersistentFlags().BoolP
 
 	BoolP(FLAG_DOCKER, "d", false, "add a Dockerfile")
 	BoolP(FLAG_ENV, "e", false, "add a .env file")
-	BoolP(FLAG_GITHUB, "g", false, "setup every .git files")
+	BoolP(FLAG_GITHUB, "g", false, "add a .gitignore file")
 	BoolP(FLAG_LICENSE, "l", false, "add a LICENSE.md file")
 	BoolP(FLAG_MAKEFILE, "m", false, "add a Makefile")
 	BoolP(FLAG_README, "r", false, "add a README.md file")

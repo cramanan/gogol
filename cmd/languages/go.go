@@ -27,25 +27,17 @@ func init() {
 
 func LanguagePreRunE(command *cobra.Command, args []string) error {
 	HasBoolFlag := command.PersistentFlags().GetBool
-	files := map[string]string{
-		cmd.FLAG_DOCKER:   cmd.FLAG_DOCKER,
-		cmd.FLAG_ENV:      ".env",
-		cmd.FLAG_LICENSE:  "LICENSE.md",
-		cmd.FLAG_MAKEFILE: cmd.FLAG_MAKEFILE,
-		cmd.FLAG_README:   "README.md",
-	}
-
-	for flag := range files {
+	for flag, filename := range cmd.FILES_FLAGS {
 		value, _ := HasBoolFlag(flag)
 		if value {
-			cmd.RootDirectory.NewFile(files[flag])
+			cmd.RootDirectory.NewFile(filename)
 		}
 	}
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("Project name: ")
 	name, err := reader.ReadString('\n')
 	if strings.Contains(name, "/") || strings.Contains(name, ".") {
-		err = errors.New("project name cannot contain '/' or '.'")
+		return errors.New("project name cannot contain '/' or '.'")
 	}
 	if err != nil {
 		return err
@@ -56,19 +48,9 @@ func LanguagePreRunE(command *cobra.Command, args []string) error {
 	}
 	cmd.RootDirectory.Name = name
 
-	github, _ := HasBoolFlag(cmd.FLAG_GITHUB)
-	if github {
-		cmd.RootDirectory.NewFile(".gitignore")
-	}
-
 	tests, _ := HasBoolFlag("tests")
 	if tests {
 		cmd.RootDirectory.NewDirectory("tests")
-		args := []*cmd.File{}
-		if github {
-			args = append(args, cmd.NewFile(".gitkeep"))
-		}
-		cmd.RootDirectory.NewDirectory("tests", args...)
 	}
 
 	return nil
@@ -106,7 +88,7 @@ var goCmd = &cobra.Command{
 				name,
 				"1.19",
 			))
-		cmd.RootDirectory.NewFile("main.go", ("package main"))
+		cmd.RootDirectory.NewFile("main.go", "package main")
 
 		return nil
 	},
@@ -114,7 +96,7 @@ var goCmd = &cobra.Command{
 	RunE: func(command *cobra.Command, args []string) error {
 		mainGo, ok := cmd.RootDirectory.Files["main.go"]
 		if !ok {
-			return errors.New("no main could be created")
+			return errors.New("no main file could be found")
 		}
 		mainGo.WriteString(`
 
