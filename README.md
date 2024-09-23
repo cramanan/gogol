@@ -15,7 +15,6 @@ Create projects faster than ever !
 -   [Usage](#usage)
 
     1. [Languages](#languages)
-    2. [Miscellaneous](#miscellaneous)
 
 ### Description
 
@@ -56,38 +55,3 @@ Example:
     ```sh
     gogol go -tmd
     ```
-
-Some languages have subcommands for specific types of projects:
-
--   Golang web project with an HTTP server:
-
-    ```sh
-      gogol go web
-    ```
-
-#### Miscellaneous
-
-export / import : The export function exports the inputed directory and saves it into a .json file, e.g:
-
-```sh
-gogol export example
-```
-
-creates the file:
-
-```json
-{
-    "name": "untitled",
-    "directories": {},
-    "files": {
-        "go.mod": {
-            "name": "go.mod",
-            "content": "bW9kdWxlIHVudGl0bGVkCgpnbyAxLjE5Cg=="
-        },
-        "main.go": {
-            "name": "main.go",
-            "content": "package main"
-        }
-    }
-}
-```
