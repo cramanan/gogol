@@ -6,6 +6,4 @@ import (
 	_ "github.com/cramanan/gogol/cmd/utilities"
 )
 
-func main() {
-	cmd.Execute()
-}
+func main() { cmd.Execute() }

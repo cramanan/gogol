@@ -6,16 +6,16 @@ Create projects faster than ever !
 
 ## Overview
 
-- [Description](#description)
+-   [Description](#description)
 
-- [Requirements](#requirements)
+-   [Requirements](#requirements)
 
-- [Installation](#installation)
+-   [Installation](#installation)
 
-- [Usage](#usage)
+-   [Usage](#usage)
 
-  1. [Languages](#languages)
-  2. [Miscellaneous](#miscellaneous)
+    1. [Languages](#languages)
+    2. [Miscellaneous](#miscellaneous)
 
 ### Description
 
@@ -45,29 +45,29 @@ gogol [language] [flags]
 
 Example:
 
-- HTML/CSS/JS project with a README.md and a LICENSE.md:
+-   HTML/CSS/JS project with a README.md and a LICENSE.md:
 
-  ```sh
-  gogol html -rl
-  ```
+    ```sh
+    gogol html -rl
+    ```
 
-- Golang project with a makefile, dockerfile and a tests folder:
+-   Golang project with a makefile, dockerfile and a tests folder:
 
-  ```sh
-  gogol go -tmd
-  ```
+    ```sh
+    gogol go -tmd
+    ```
 
 Some languages have subcommands for specific types of projects:
 
-- Golang web project with an HTTP server:
+-   Golang web project with an HTTP server:
 
-  ```sh
-    gogol go web
-  ```
+    ```sh
+      gogol go web
+    ```
 
 #### Miscellaneous
 
-export / import : The export function exports the inputed directory and saves it into a .json file (e.g.)
+export / import : The export function exports the inputed directory and saves it into a .json file, e.g:
 
 ```sh
 gogol export example
@@ -77,17 +77,17 @@ creates the file:
 
 ```json
 {
-  "name": "untitled",
-  "directories": {},
-  "files": {
-    "go.mod": {
-      "name": "go.mod",
-      "content": "bW9kdWxlIHVudGl0bGVkCgpnbyAxLjE5Cg=="
-    },
-    "main.go": {
-      "name": "main.go",
-      "content": "package main"
+    "name": "untitled",
+    "directories": {},
+    "files": {
+        "go.mod": {
+            "name": "go.mod",
+            "content": "bW9kdWxlIHVudGl0bGVkCgpnbyAxLjE5Cg=="
+        },
+        "main.go": {
+            "name": "main.go",
+            "content": "package main"
+        }
     }
-  }
 }
 ```
