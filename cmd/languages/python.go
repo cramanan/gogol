@@ -16,7 +16,7 @@ var pythonroot = &cobra.Command{
 	PreRunE: LanguagePreRunE,
 	Run: func(command *cobra.Command, args []string) {
 		cmd.RootDirectory.NewFile("__init__.py")
-		cmd.RootDirectory.NewFile("__main__.py", ("print(\"Hello World\")"))
+		cmd.RootDirectory.NewFile("__main__.py").WriteString("print(\"Hello World\")")
 		cmd.RootDirectory.NewFile("setup.py")
 		cmd.RootDirectory.NewFile("requirements.txt")
 		cmd.RootDirectory.NewFile("__init__.py")

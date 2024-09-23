@@ -14,57 +14,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const GROUP_LANG = "LANG"
-
-func init() {
-	cmd.RootCmd.AddGroup(&cobra.Group{
-		ID:    GROUP_LANG,
-		Title: "Languages",
-	})
-	goCmd.AddCommand(goWebCmd)
-	cmd.RootCmd.AddCommand(goCmd)
-}
-
-func LanguagePreRunE(command *cobra.Command, args []string) error {
-	HasBoolFlag := command.PersistentFlags().GetBool
-	for flag, filename := range cmd.FILES_FLAGS {
-		value, _ := HasBoolFlag(flag)
-		if value {
-			cmd.RootDirectory.NewFile(filename)
-		}
-	}
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("Project name: ")
-	name, err := reader.ReadString('\n')
-	if strings.Contains(name, "/") || strings.Contains(name, ".") {
-		return errors.New("project name cannot contain '/' or '.'")
-	}
-	if err != nil {
-		return err
-	}
-	name = name[:len(name)-1]
-	if name == "" {
-		name = "untitled"
-	}
-	cmd.RootDirectory.Name = name
-
-	tests, _ := HasBoolFlag("tests")
-	if tests {
-		cmd.RootDirectory.NewDirectory("tests")
-	}
-
-	return nil
-}
-
-func LanguagePostRunE(*cobra.Command, []string) (err error) {
-	return cmd.RootDirectory.Create(".")
-}
-
 // goCmd represents the go command
 var goCmd = &cobra.Command{
-	Use:       "go",
-	GroupID:   GROUP_LANG,
-	ValidArgs: []string{"web"},
+	Use:     "go",
+	GroupID: GROUP_LANG,
 	PersistentPreRunE: func(command *cobra.Command, args []string) error {
 		err := LanguagePreRunE(command, args)
 		if err != nil {
@@ -73,83 +26,30 @@ var goCmd = &cobra.Command{
 		reader := bufio.NewReader(os.Stdin)
 		fmt.Print("Package name: ")
 		name, err := reader.ReadString('\n')
-		if strings.Contains(name, "/") || strings.Contains(name, ".") {
-			err = errors.New("project name cannot contain '/' or '.'")
-		}
 		if err != nil {
 			return err
 		}
+
+		if strings.Contains(name, "/") || strings.Contains(name, ".") {
+			return errors.New("project name cannot contain '/' nor '.'")
+		}
+
 		name = name[:len(name)-1]
 		if name == "" {
 			name = "untitled"
 		}
-		cmd.RootDirectory.NewFile("go.mod",
-			fmt.Sprintf("module %s\n\ngo %s\n",
-				name,
-				"1.19",
-			))
-		cmd.RootDirectory.NewFile("main.go", "package main")
+
+		mod := cmd.RootDirectory.NewFile("go.mod")
+		fmt.Fprintf(mod, "module %s\n\ngo 1.19", name)
 
 		return nil
 	},
 
 	RunE: func(command *cobra.Command, args []string) error {
-		mainGo, ok := cmd.RootDirectory.Files["main.go"]
-		if !ok {
-			return errors.New("no main file could be found")
-		}
-		mainGo.WriteString(`
-
-import "fmt"
-			
-func main(){
-	fmt.Println("Hello World")
-}`)
-		return nil
+		mainFile := cmd.RootDirectory.NewFile("main.go")
+		_, err := fmt.Fprint(mainFile, "package main\n\nimport \"fmt\"\n\nfunc main(){\n\tfmt.Println(\"Hello World\")\n}")
+		return err
 	},
+
 	PersistentPostRunE: LanguagePostRunE,
-}
-
-var goWebCmd = &cobra.Command{
-	Use: "web",
-	Run: func(command *cobra.Command, args []string) {
-		mainGo, ok := cmd.RootDirectory.Files["main.go"]
-		if !ok {
-			mainGo = cmd.RootDirectory.NewFile("main.go")
-		}
-		mainGo.WriteString(`
-import (
-	"fmt"
-	"net/http"
-)
-			
-func main(){
-	router := http.NewServeMux()
-
-	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "Hello World")
-	})
-	
-	server := http.Server{
-		Addr:    ":8080",
-		Handler: router,
-	}
-	
-	fmt.Printf("Server listening on port %s\n", server.Addr)
-	server.ListenAndServe()
-}
-`)
-
-		api := cmd.RootDirectory.NewDirectory("api")
-		api.NewFile("api.go", ("package api"))
-		for _, name := range []string{"models", "controllers"} {
-			directory := api.NewDirectory(name)
-			directory.NewFile(fmt.Sprintf("%s.go", name), (fmt.Sprintf("package %s", name)))
-		}
-
-		static := cmd.RootDirectory.NewDirectory("static")
-		for _, name := range []string{"css", "js"} {
-			static.NewDirectory(name)
-		}
-	},
 }

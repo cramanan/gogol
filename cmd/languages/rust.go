@@ -15,14 +15,8 @@ var rustCmd = &cobra.Command{
 	PreRunE: LanguagePreRunE,
 	Run: func(command *cobra.Command, args []string) {
 		source := cmd.RootDirectory.NewDirectory("src")
-		source.NewFile("main.rs", ("fn main() {\n\tprintln!(\"Hello, world!\");\n}\n"))
-		cmd.RootDirectory.NewFile("Cargo.toml", (`[package]
-name = "untitled"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-`))
+		source.NewFile("main.rs").WriteString("fn main() {\n\tprintln!(\"Hello, world!\");\n}\n")
+		cmd.RootDirectory.NewFile("Cargo.toml").WriteString("[package]\nname = \"untitled\"\nversion = \"0.1.0\"\nedition = \"2021\"\n\n[dependencies]\n")
 	},
 	PostRunE: LanguagePostRunE,
 }

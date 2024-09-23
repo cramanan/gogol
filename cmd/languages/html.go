@@ -13,21 +13,21 @@ var htmlCmd = &cobra.Command{
 	GroupID: GROUP_LANG,
 	Use:     "html",
 	Run: func(command *cobra.Command, args []string) {
-		cmd.RootDirectory.NewFile("index.html", (`<!DOCTYPE html>
+		cmd.RootDirectory.NewFile("index.html").WriteString(`<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Document</title>
         <link rel="stylesheet" href="style.css" />
-        <script src="script.js" defer></script>
+        <script src="script.js" defer />
     </head>
     <body>
         <h1>Hello World</h1>
     </body>
-</html>`))
-		cmd.RootDirectory.NewFile("style.css", ("*,\n*::before,\n*::after {\n\tmargin: 0;\n\tpadding: 0;\n\tbox-sizing: border-box;\n}\n\n"))
-		cmd.RootDirectory.NewFile("script.js", ("console.log('Hello World !')"))
+</html>`)
+		cmd.RootDirectory.NewFile("style.css").WriteString("*,\n*::before,\n*::after {\n\tmargin: 0;\n\tpadding: 0;\n\tbox-sizing: border-box;\n}\n\n")
+		cmd.RootDirectory.NewFile("script.js").WriteString("console.log('Hello World !')")
 	},
 }
 
