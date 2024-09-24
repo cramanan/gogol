@@ -38,7 +38,9 @@ func NewFile(name string) *File {
 }
 
 func (root *Directory) NewDirectory(name string) (d *Directory) {
-	return NewDirectory(name)
+	d = NewDirectory(name)
+	root.Directories[name] = d
+	return d
 }
 
 func (root Directory) Create(origin string) error {
@@ -71,10 +73,7 @@ func (root Directory) Create(origin string) error {
 }
 
 func (root *Directory) NewFile(name string) (f *File) {
-	f = &File{
-		name,
-		[]byte{},
-	}
+	f = NewFile(name)
 	root.Files[name] = f
 	return f
 }
