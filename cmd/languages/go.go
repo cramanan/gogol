@@ -14,6 +14,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func init() {
+	cmd.RootCmd.AddCommand(goCmd)
+}
+
 // goCmd represents the go command
 var goCmd = &cobra.Command{
 	Use:     "go",

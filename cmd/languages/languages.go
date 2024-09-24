@@ -18,10 +18,10 @@ func init() {
 		ID:    GROUP_LANG,
 		Title: "Languages",
 	})
-	cmd.RootCmd.AddCommand(goCmd)
 }
 
 func LanguagePreRunE(command *cobra.Command, _ []string) error {
+	// TODO: use args to determine destination
 	HasBoolFlag := command.PersistentFlags().GetBool
 	for flag, filename := range cmd.FILES_FLAGS {
 		if value, _ := HasBoolFlag(flag); value {
@@ -43,7 +43,6 @@ func LanguagePreRunE(command *cobra.Command, _ []string) error {
 		name = "untitled"
 	}
 	cmd.RootDirectory.Name = name
-
 	return nil
 }
 

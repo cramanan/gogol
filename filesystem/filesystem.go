@@ -1,4 +1,4 @@
-package cmd
+package filesystem
 
 import (
 	"fmt"
@@ -8,7 +8,12 @@ import (
 
 type File struct {
 	name string
-	Body []byte
+	body []byte
+}
+
+func (f *File) Write(b []byte) (int, error) {
+	f.body = append(f.body, b...)
+	return len(b), nil
 }
 
 type Directory struct {
@@ -48,11 +53,11 @@ func (root Directory) Create(origin string) error {
 			if err != nil {
 				return fmt.Errorf("error creating file: %s", err.Error())
 			}
-			defer ff.Close()
-			_, err = ff.Write((file.Body))
+			_, err = ff.Write(file.body)
 			if err != nil {
 				return err
 			}
+			ff.Close()
 		}
 		for _, subdir := range dir.Directories {
 			err = f(filepath.Join(path, subdir.Name), *subdir)
@@ -72,13 +77,4 @@ func (root *Directory) NewFile(name string) (f *File) {
 	}
 	root.Files[name] = f
 	return f
-}
-
-func (f *File) Write(b []byte) (int, error) {
-	f.Body = append(f.Body, b...)
-	return len(b), nil
-}
-
-func (f *File) WriteString(s string) (int, error) {
-	return f.Write([]byte(s))
 }

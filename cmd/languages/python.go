@@ -4,6 +4,8 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package languages
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 
 	"github.com/cramanan/gogol/cmd"
@@ -16,7 +18,8 @@ var pythonroot = &cobra.Command{
 	PreRunE: LanguagePreRunE,
 	Run: func(command *cobra.Command, args []string) {
 		cmd.RootDirectory.NewFile("__init__.py")
-		cmd.RootDirectory.NewFile("__main__.py").WriteString("print(\"Hello World\")")
+		main := cmd.RootDirectory.NewFile("__main__.py")
+		fmt.Fprintln(main, "print(\"Hello World\")")
 		cmd.RootDirectory.NewFile("setup.py")
 		cmd.RootDirectory.NewFile("requirements.txt")
 		cmd.RootDirectory.NewFile("__init__.py")

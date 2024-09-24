@@ -4,6 +4,8 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package languages
 
 import (
+	"fmt"
+
 	"github.com/cramanan/gogol/cmd"
 	"github.com/spf13/cobra"
 )
@@ -14,7 +16,8 @@ var htmlCmd = &cobra.Command{
 	Use:               "html",
 	PersistentPreRunE: LanguagePreRunE,
 	RunE: func(command *cobra.Command, args []string) error {
-		cmd.RootDirectory.NewFile("index.html").WriteString(`<!DOCTYPE html>
+		index := cmd.RootDirectory.NewFile("index.html")
+		fmt.Fprintln(index, `<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
@@ -26,13 +29,17 @@ var htmlCmd = &cobra.Command{
     <body>
         <h1>Hello World</h1>
     </body>
-</html>
-`)
+</html>`)
 
-		cmd.RootDirectory.NewFile("style.css").WriteString("*,\n*::before,\n*::after {\n\tmargin: 0;\n\tpadding: 0;\n\tbox-sizing: border-box;\n}\n\n")
-		cmd.RootDirectory.NewFile("script.js").WriteString("console.log('Hello World !')")
+		style := cmd.RootDirectory.NewFile("style.css")
+		fmt.Fprintln(style, "*,\n*::before,\n*::after {\n\tmargin: 0;\n\tpadding: 0;\n\tbox-sizing: border-box;\n}")
+
+		script := cmd.RootDirectory.NewFile("script.js")
+		fmt.Fprintln(script, "console.log('Hello World !')")
+
 		return nil
 	},
+
 	PersistentPostRunE: LanguagePostRunE,
 }
 
