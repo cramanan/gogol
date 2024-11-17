@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/cramanan/gogol/cmd"
+	"github.com/cramanan/gogol/filesystem"
 	"github.com/spf13/cobra"
 )
 
@@ -43,14 +44,14 @@ var goCmd = &cobra.Command{
 			name = "untitled"
 		}
 
-		mod := cmd.RootDirectory.NewFile("go.mod")
+		mod := filesystem.RootDirectory.NewFile("go.mod")
 		fmt.Fprintf(mod, "module %s\n\ngo 1.19", name)
 
 		return nil
 	},
 
 	RunE: func(command *cobra.Command, args []string) error {
-		mainFile := cmd.RootDirectory.NewFile("main.go")
+		mainFile := filesystem.RootDirectory.NewFile("main.go")
 		_, err := fmt.Fprint(mainFile, "package main\n\nimport \"fmt\"\n\nfunc main(){\n\tfmt.Println(\"Hello World\")\n}")
 		return err
 	},

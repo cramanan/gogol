@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/cramanan/gogol/cmd"
+	"github.com/cramanan/gogol/filesystem"
 	"github.com/spf13/cobra"
 )
 
@@ -22,10 +23,10 @@ func init() {
 
 func LanguagePreRunE(command *cobra.Command, _ []string) error {
 	// TODO: use args to determine destination
-	HasBoolFlag := command.PersistentFlags().GetBool
+	HasBoolFlag := command.Root().PersistentFlags().GetBool
 	for flag, filename := range cmd.FILES_FLAGS {
-		if value, _ := HasBoolFlag(flag); value {
-			cmd.RootDirectory.NewFile(filename)
+		if ok, _ := HasBoolFlag(flag); ok {
+			filesystem.RootDirectory.NewFile(filename)
 		}
 	}
 
@@ -42,11 +43,23 @@ func LanguagePreRunE(command *cobra.Command, _ []string) error {
 	if name == "" {
 		name = "untitled"
 	}
-	cmd.RootDirectory.Name = name
+	filesystem.RootDirectory.Name = name
 	return nil
 }
 
-func LanguagePostRunE(_ *cobra.Command, args []string) (err error) {
+func LanguagePostRunE(command *cobra.Command, args []string) (err error) {
 	// TODO: use args to determine destination
-	return cmd.RootDirectory.Create(".")
+
+	if ok, _ := cmd.RootCmd.PersistentFlags().GetBool(cmd.FLAG_GITHUB); ok {
+		root := filesystem.RootDirectory
+		root.NewFile(".gitignore")
+		for _, directory := range root.Directories {
+			if len(directory.Files) == 0 {
+				directory.NewFile(".gitkeep")
+			}
+		}
+
+	}
+
+	return filesystem.RootDirectory.Create(".")
 }

@@ -9,24 +9,24 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/cramanan/gogol/cmd"
+	"github.com/cramanan/gogol/filesystem"
 )
 
 // pythonroot represents the python command
-var pythonroot = &cobra.Command{
+var pythonRoot = &cobra.Command{
 	Use:     "python",
 	GroupID: GROUP_LANG,
 	PreRunE: LanguagePreRunE,
 	Run: func(command *cobra.Command, args []string) {
-		cmd.RootDirectory.NewFile("__init__.py")
-		main := cmd.RootDirectory.NewFile("__main__.py")
+		filesystem.RootDirectory.NewFile("__init__.py")
+		main := filesystem.RootDirectory.NewFile("__main__.py")
 		fmt.Fprintln(main, "print(\"Hello World\")")
-		cmd.RootDirectory.NewFile("setup.py")
-		cmd.RootDirectory.NewFile("requirements.txt")
-		cmd.RootDirectory.NewFile("__init__.py")
+		filesystem.RootDirectory.NewFile("setup.py")
+		filesystem.RootDirectory.NewFile("requirements.txt")
 	},
 	PostRunE: LanguagePostRunE,
 }
 
 func init() {
-	cmd.RootCmd.AddCommand(pythonroot)
+	cmd.RootCmd.AddCommand(pythonRoot)
 }

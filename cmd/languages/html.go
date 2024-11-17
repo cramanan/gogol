@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/cramanan/gogol/cmd"
+	"github.com/cramanan/gogol/filesystem"
 	"github.com/spf13/cobra"
 )
 
@@ -16,7 +17,7 @@ var htmlCmd = &cobra.Command{
 	Use:               "html",
 	PersistentPreRunE: LanguagePreRunE,
 	RunE: func(command *cobra.Command, args []string) error {
-		index := cmd.RootDirectory.NewFile("index.html")
+		index := filesystem.RootDirectory.NewFile("index.html")
 		fmt.Fprintln(index, `<!DOCTYPE html>
 <html lang="en">
     <head>
@@ -31,10 +32,10 @@ var htmlCmd = &cobra.Command{
     </body>
 </html>`)
 
-		style := cmd.RootDirectory.NewFile("style.css")
+		style := filesystem.RootDirectory.NewFile("style.css")
 		fmt.Fprintln(style, "*,\n*::before,\n*::after {\n\tmargin: 0;\n\tpadding: 0;\n\tbox-sizing: border-box;\n}")
 
-		script := cmd.RootDirectory.NewFile("script.js")
+		script := filesystem.RootDirectory.NewFile("script.js")
 		fmt.Fprintln(script, "console.log('Hello World !')")
 
 		return nil

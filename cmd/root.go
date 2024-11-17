@@ -6,11 +6,8 @@ package cmd
 import (
 	"os"
 
-	"github.com/cramanan/gogol/filesystem"
 	"github.com/spf13/cobra"
 )
-
-var RootDirectory = filesystem.NewDirectory("untitled")
 
 const (
 	FLAG_DOCKER   = "dockerfile"
@@ -27,7 +24,6 @@ var FILES_FLAGS = map[string]string{
 	FLAG_LICENSE:  "LICENSE.md",
 	FLAG_MAKEFILE: FLAG_MAKEFILE,
 	FLAG_README:   "README.md",
-	// FLAG_GITHUB:   ".gitignore",
 }
 
 func init() {

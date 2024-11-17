@@ -6,8 +6,9 @@ import (
 	"path/filepath"
 )
 
+var RootDirectory = NewDirectory("untitled")
+
 type File struct {
-	name string
 	body []byte
 }
 
@@ -17,9 +18,9 @@ func (f *File) Write(b []byte) (int, error) {
 }
 
 type Directory struct {
-	Name        string                `json:"name"`
-	Directories map[string]*Directory `json:"directories"`
-	Files       map[string]*File      `json:"files"`
+	Name        string
+	Directories map[string]*Directory
+	Files       map[string]*File
 }
 
 func NewDirectory(name string) *Directory {
@@ -32,7 +33,6 @@ func NewDirectory(name string) *Directory {
 
 func NewFile(name string) *File {
 	return &File{
-		name,
 		[]byte{},
 	}
 }
@@ -43,13 +43,10 @@ func (root *Directory) NewDirectory(name string) (d *Directory) {
 	return d
 }
 
-func (root Directory) Create(origin string) error {
-	var f func(string, Directory) error
-	f = func(path string, dir Directory) error {
-		err := os.Mkdir(path, os.ModePerm)
-		if err != nil {
-			return fmt.Errorf("error creating directory: %s", err.Error())
-		}
+func (root *Directory) Create(origin string) (err error) {
+	var f func(string, *Directory) error
+	f = func(path string, dir *Directory) error {
+		os.Mkdir(path, os.ModePerm) // TODO: Should warn
 		for name, file := range dir.Files {
 			ff, err := os.Create(filepath.Join(path, name))
 			if err != nil {
@@ -62,7 +59,7 @@ func (root Directory) Create(origin string) error {
 			ff.Close()
 		}
 		for _, subdir := range dir.Directories {
-			err = f(filepath.Join(path, subdir.Name), *subdir)
+			err = f(filepath.Join(path, subdir.Name), subdir)
 			if err != nil {
 				return err
 			}
